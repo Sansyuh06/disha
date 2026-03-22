@@ -1,45 +1,33 @@
 # vita_server.py
-# Serves TTS via moulish-dev/vita toolkit (Kokoro-82M) at http://localhost:8181
-#
-# ── Setup ────────────────────────────────────────────
-# git clone https://github.com/moulish-dev/vita.git vita_lib
-# cd vita_lib && pip install -e . && cd ..
-# python vita_server.py
-#
-# On Linux:  sudo apt-get install espeak-ng
-# On Mac:    brew install espeak
-# On Windows: install espeak-ng from github.com/espeak-ng/espeak-ng/releases
-# ─────────────────────────────────────────────────────
+# Kokoro-82M TTS server at http://localhost:8181
+# Uses moulish-dev/vita's kokoro dependency directly for maximum reliability
 
 from flask import Flask, request, send_file
 from flask_cors import CORS
-import io, os, tempfile
+from kokoro import KPipeline
+import soundfile as sf
+import numpy as np
+import tempfile, os, threading
 
 app = Flask(__name__)
 CORS(app)
 
-tts_engine = None
+# Lazy-loaded pipeline
+pipeline = None
 
-def get_tts(voice='af_heart'):
-    """Lazy-load the Vita TTS engine."""
-    global tts_engine
-    if tts_engine is None:
-        try:
-            from vita import VitaTTS
-            tts_engine = VitaTTS(model='kokoro', voice=voice)
-            print('[Vita] ✓ Loaded VitaTTS (Kokoro-82M)')
-        except ImportError:
-            # Fallback: use kokoro directly if vita package not installed
-            print('[Vita] vita package not found, using kokoro directly')
-            from kokoro import KPipeline
-            tts_engine = KPipeline(lang_code='a')
-    return tts_engine
+def get_pipeline():
+    global pipeline
+    if pipeline is None:
+        print('[Vita] Loading Kokoro-82M pipeline (first load downloads ~300MB)...')
+        pipeline = KPipeline(lang_code='a')
+        print('[Vita] ✓ Kokoro-82M pipeline ready')
+    return pipeline
 
 
 @app.route('/speak', methods=['POST'])
 def speak():
-    data = request.json
-    text = data.get('text', '')[:500]  # 500 char safety limit
+    data = request.json or {}
+    text = (data.get('text', '') or '')[:500]
     voice = data.get('voice', 'af_heart')
     speed = float(data.get('speed', 1.0))
 
@@ -47,41 +35,29 @@ def speak():
         return {'error': 'empty text'}, 400
 
     try:
-        engine = get_tts(voice)
+        pipe = get_pipeline()
+        audio_chunks = []
+        for _, _, audio in pipe(text, voice=voice, speed=speed):
+            audio_chunks.append(audio)
+
+        if not audio_chunks:
+            return {'error': 'no audio generated'}, 500
+
+        combined = np.concatenate(audio_chunks)
         tmp = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
         tmp_path = tmp.name
         tmp.close()
+        sf.write(tmp_path, combined, 24000, format='WAV')
 
-        # Use Vita's clean API if available
-        if hasattr(engine, 'generate_audio'):
-            engine.generate_audio(text, output_path=tmp_path)
-        else:
-            # Direct kokoro pipeline fallback
-            import soundfile as sf
-            import numpy as np
-            audio_chunks = []
-            for _, _, audio in engine(text, voice=voice, speed=speed):
-                audio_chunks.append(audio)
-            if audio_chunks:
-                combined = np.concatenate(audio_chunks)
-                sf.write(tmp_path, combined, 24000, format='WAV')
+        response = send_file(tmp_path, mimetype='audio/wav')
+        # Clean up temp file after serving
+        threading.Timer(10.0, lambda: os.unlink(tmp_path) if os.path.exists(tmp_path) else None).start()
+        return response
 
-        return send_file(
-            tmp_path,
-            mimetype='audio/wav',
-            as_attachment=False,
-            download_name='speech.wav'
-        )
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return {'error': str(e)}, 500
-    finally:
-        # Clean up temp file after a delay (let Flask send it first)
-        try:
-            if 'tmp_path' in locals():
-                import threading
-                threading.Timer(5.0, lambda: os.unlink(tmp_path)).start()
-        except:
-            pass
 
 
 @app.route('/status', methods=['GET'])
@@ -90,22 +66,19 @@ def status():
         'status': 'ok',
         'model': 'kokoro-82m',
         'library': 'moulish-dev/vita',
-        'voices': [
-            'af_heart', 'af_bella', 'am_adam', 'am_echo',
-            'bf_emma', 'bm_george'
-        ]
+        'voices': ['af_heart', 'af_bella', 'am_adam', 'am_echo', 'bf_emma', 'bm_george']
     }
 
 
 if __name__ == '__main__':
+    print()
     print('╔══════════════════════════════════════════════════╗')
     print('║  VITA TTS Server — Kokoro-82M                   ║')
     print('║  Port: 8181 | github.com/moulish-dev/vita       ║')
     print('╚══════════════════════════════════════════════════╝')
     print()
-    print('Setup:')
-    print('  git clone https://github.com/moulish-dev/vita.git vita_lib')
-    print('  cd vita_lib && pip install -e . && cd ..')
-    print('  python vita_server.py')
+    # Pre-warm the pipeline
+    get_pipeline()
     print()
+    print('[Vita] Server starting on http://localhost:8181')
     app.run(host='0.0.0.0', port=8181, debug=False)

@@ -42,7 +42,15 @@ export default function DishaMascot({ onSessionReady }: Props) {
     if (!SpeechRec) { setUserText(''); inputRef.current?.focus(); return; }
     const rec = new SpeechRec();
     rec.lang = language.code;
-    rec.onresult = (e: any) => setUserText(e.results[0][0].transcript);
+    rec.interimResults = true; // Make it dynamic
+    
+    rec.onresult = (e: any) => {
+      let transcript = '';
+      for (let i = 0; i < e.results.length; i++) {
+        transcript += e.results[i][0].transcript;
+      }
+      setUserText(transcript);
+    };
     rec.onerror = () => setMicActive(false);
     rec.onend = () => setMicActive(false);
     setMicActive(true);

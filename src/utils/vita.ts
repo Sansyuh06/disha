@@ -33,7 +33,7 @@ export async function speakWithVita(text: string, opts: VitaOptions = {}): Promi
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.slice(0, 500), voice, speed }),
-        signal: AbortSignal.timeout(8000),
+        signal: AbortSignal.timeout(30000),
       });
       if (res.ok) {
         const blob = await res.blob();

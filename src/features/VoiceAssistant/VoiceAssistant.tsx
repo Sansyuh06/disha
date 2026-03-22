@@ -46,13 +46,30 @@ export default function VoiceAssistant() {
     const recognition = new SpeechRec();
     recognition.lang = selectedLang.code;
     recognition.continuous = false;
-    recognition.interimResults = false;
+    recognition.interimResults = true; // Make it dynamic
     setError(null);
     setMicState('listening');
     setStatusText('Listening...');
 
-    recognition.onresult = async (event: any) => {
-      const spokenText = event.results[0][0].transcript as string;
+    let finalTranscript = '';
+
+    recognition.onresult = (event: any) => {
+      let transcript = '';
+      for (let i = 0; i < event.results.length; ++i) {
+        transcript += event.results[i][0].transcript;
+      }
+      setStatusText(transcript || 'Listening...');
+      finalTranscript = transcript;
+    };
+
+    recognition.onend = async () => {
+      if (!finalTranscript.trim()) {
+        setMicState('idle');
+        setStatusText('Tap to speak');
+        return;
+      }
+
+      const spokenText = finalTranscript;
       addMessage({ role: 'user', text: spokenText, lang: selectedLang.code, langFlag: selectedLang.flag, id: `u${Date.now()}` });
       setMicState('processing');
       setStatusText('Thinking...');
