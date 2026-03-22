@@ -94,11 +94,14 @@ Generate 3-5 steps appropriate for the task. Use realistic Union Bank counter na
 
     setMicState('listening');
 
+    let finalTranscript = '';
+
     recognition.onresult = (e: any) => {
       let transcript = '';
       for (let i = 0; i < e.results.length; ++i) {
         transcript += e.results[i][0].transcript;
       }
+      finalTranscript = transcript;
       setInput(transcript);
     };
 
@@ -111,6 +114,9 @@ Generate 3-5 steps appropriate for the task. Use realistic Union Bank counter na
 
     recognition.onend = () => {
       setMicState('idle');
+      if (finalTranscript.trim()) {
+        handleSubmit(finalTranscript);
+      }
     };
 
     recognition.start();

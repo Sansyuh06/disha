@@ -120,6 +120,21 @@ Generate realistic documents for their task. Estimated wait: 15-45 minutes depen
     if (qrData) {
       try {
         const data = JSON.parse(qrData);
+
+        // Restore pre-visit context so documents aren't lost
+        customerDispatch({
+          type: 'SET_PRE_VISIT',
+          session: {
+            sessionCode: data.code,
+            qrData,
+            task: data.task,
+            documents: data.documents || [],
+            estimatedWait: plan?.estimated_wait_minutes ?? 25,
+            bestTime: plan?.best_time_to_visit ?? '',
+            createdAt: new Date(data.timestamp || Date.now()),
+          },
+        });
+
         customerDispatch({
           type: 'SET_JOURNEY',
           journey: {

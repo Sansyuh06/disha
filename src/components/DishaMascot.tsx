@@ -129,7 +129,9 @@ export default function DishaMascot({ onSessionReady }: Props) {
       setPhase('done');
 
       // 7. Navigate after short delay
+      setMascotText('Navigating...');
       setTimeout(() => {
+        setPhase('idle');
         navigate(agentResult.route);
         onSessionReady?.();
       }, 1800);
@@ -179,7 +181,7 @@ export default function DishaMascot({ onSessionReady }: Props) {
         {/* Speech bubble */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={mascotText}
+            key={phase === 'thinking' ? 'thinking' : mascotText}
             initial={{ opacity: 0, y: 4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -4 }}
@@ -192,11 +194,19 @@ export default function DishaMascot({ onSessionReady }: Props) {
               boxShadow: '0 1px 8px rgba(13,27,62,0.06)',
             }}
           >
-            {mascotText}
-            {vitaReady && (
-              <span style={{ marginLeft: '6px', fontSize: '9px', padding: '1px 6px', borderRadius: '20px', background: '#E0F7F3', color: '#089B84', fontWeight: 600 }}>
-                Kokoro
-              </span>
+            {phase === 'thinking' || phase === 'acting' ? (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--teal)' }}>
+                <span className="animate-pulse font-medium">DISHA is thinking...</span>
+              </div>
+            ) : (
+              <>
+                {mascotText}
+                {vitaReady && (
+                  <span style={{ marginLeft: '6px', fontSize: '9px', padding: '1px 6px', borderRadius: '20px', background: '#E0F7F3', color: '#089B84', fontWeight: 600 }}>
+                    Kokoro
+                  </span>
+                )}
+              </>
             )}
           </motion.div>
         </AnimatePresence>

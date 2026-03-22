@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { LanguageProvider } from './contexts/LanguageContext.tsx'
@@ -12,18 +12,32 @@ import './index.css'
 // Non-blocking warmup
 checkVitaStatus();
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <LanguageProvider>
-        <AccessibilityProvider>
-          <CustomerProvider>
-            <QueueProvider>
-              <App />
-            </QueueProvider>
-          </CustomerProvider>
-        </AccessibilityProvider>
-      </LanguageProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
-)
+function Root() {
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('kiosk') === 'true') {
+      const enterFs = () => {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      };
+      document.body.addEventListener('click', enterFs, { once: true });
+      document.body.addEventListener('touchstart', enterFs, { once: true });
+    }
+  }, []);
+
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <LanguageProvider>
+          <AccessibilityProvider>
+            <CustomerProvider>
+              <QueueProvider>
+                <App />
+              </QueueProvider>
+            </CustomerProvider>
+          </AccessibilityProvider>
+        </LanguageProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')!).render(<Root />);

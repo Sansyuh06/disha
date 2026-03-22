@@ -5,6 +5,7 @@ import AccessibilityToggle from '../components/AccessibilityToggle';
 import OllamaStatus from '../components/OllamaStatus';
 import DishaLogo from '../components/DishaLogo';
 import { LANGUAGES } from '../utils/languages';
+import { useCustomer } from '../contexts/CustomerContext';
 
 const NAV_ITEMS = [
   {
@@ -85,7 +86,14 @@ const NAV_ITEMS = [
 export default function CustomerApp() {
   const [langSheetOpen, setLangSheetOpen] = useState(false);
   const { language, setLanguage } = useLanguage();
+  const { dispatch: customerDispatch } = useCustomer();
   const navigate = useNavigate();
+  const [now, setNow] = React.useState(new Date());
+
+  React.useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -141,12 +149,30 @@ export default function CustomerApp() {
           className="bg-white px-6 py-3 flex items-center justify-between shrink-0"
           style={{ borderBottom: '1px solid var(--border)', boxShadow: 'var(--shadow-xs)' }}
         >
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-full" style={{ background: 'var(--green)' }} />
-            <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Session active</span>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: 'var(--green)' }} />
+              <span className="text-xs font-medium" style={{ color: 'var(--text-muted)' }}>Session active</span>
+            </div>
+            <div className="h-4 w-px" style={{ background: 'var(--border)' }} />
+            <div className="flex items-center gap-2 text-xs font-medium" style={{ color: 'var(--navy-900)' }}>
+              <span>{now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+              <span style={{ color: 'var(--border-2)' }}>·</span>
+              <span>{now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                customerDispatch({ type: 'CLEAR_SESSION' } as any);
+                navigate('/');
+              }}
+              className="text-xs font-semibold px-3 py-1.5 rounded-lg border hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+              style={{ color: 'var(--text-muted)', borderColor: 'var(--border)' }}
+            >
+              End Session
+            </button>
             <button
               onClick={() => setLangSheetOpen(true)}
               className="flex items-center gap-2 text-sm border rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors"

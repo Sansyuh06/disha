@@ -64,6 +64,7 @@ const MOCK_CUSTOMERS: QueueItem[] = [
     taskType: 'emergency', docsScanned: 1, docsTotal: 3,
     language: 'ta', languageFlag: '🇮🇳', isA11y: true, isBereavement: true,
     arrivedAt: new Date(Date.now() - 10 * 60 * 1000), status: 'waiting',
+    aiSuggestion: "Customer is deeply grieving. Speak softly in Tamil. Offer immediate seating and water. They need to settle an FD claim; minimize paperwork and pre-fill documents where possible.",
   },
   {
     token: 'A044', name: 'Arjun Singh', task: 'Account Opening',
@@ -170,7 +171,7 @@ const QueueContext = createContext<QueueContextType | null>(null);
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, {
     queue: MOCK_CUSTOMERS,
-    stats: { servedToday: 0, avgServiceMinutes: 0 },
+    stats: { servedToday: 3, avgServiceMinutes: 14 },
     activeCustomerToken: null,
   });
 

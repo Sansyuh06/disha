@@ -118,17 +118,17 @@ export default function ActionChecklist({ result }: { result: BereavementResult 
       <p className="text-center italic text-blue-600 text-sm px-4">{result.closing_message}</p>
 
       {/* Actions */}
-      <div className="flex gap-3 flex-col sm:flex-row">
+      <div className="flex gap-3 flex-col sm:flex-row sticky bottom-4 z-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-lg border border-blue-50 mt-8">
         <button
           onClick={() => generateBereavementPDF(result.steps, result.legal_summary, result.helpline)}
           className="flex-1 py-3 border-2 rounded-xl text-sm font-medium transition-colors hover:bg-blue-50"
-          style={{ borderColor: '#93C5FD', color: '#1D4ED8' }}
+          style={{ borderColor: '#93C5FD', color: '#1D4ED8', backgroundColor: 'white' }}
         >
           🖨️ Print This Guide
         </button>
         <button
           onClick={() => navigate('/customer/journey', { state: { prefillText: 'I need to process a bereavement claim — please guide me' } })}
-          className="flex-1 py-3 rounded-xl text-white text-sm font-semibold"
+          className="flex-1 py-3 rounded-xl text-white text-sm font-semibold shadow-sm"
           style={{ backgroundColor: '#3B82F6' }}
         >
           Plan My Branch Visit →

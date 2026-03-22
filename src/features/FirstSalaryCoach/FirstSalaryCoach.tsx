@@ -129,13 +129,19 @@ Create a realistic financial plan. Return ONLY this JSON:
             </div>
 
             {/* Exchange rate */}
-            {exchangeRate && plan.budget.savings.amount > 0 && (
-              <p className="text-xs text-brand-muted text-center mb-4">
-                Your ₹{plan.budget.savings.amount.toLocaleString('en-IN')} monthly saving = 
-                ${(plan.budget.savings.amount * exchangeRate.usd).toFixed(0)} USD · 
-                €{(plan.budget.savings.amount * exchangeRate.eur).toFixed(0)} EUR
-              </p>
-            )}
+            {exchangeRate ? (
+              plan.budget.savings.amount > 0 && (
+                <p className="text-xs text-brand-muted text-center mb-4">
+                  Your ₹{plan.budget.savings.amount.toLocaleString('en-IN')} monthly saving = 
+                  ${(plan.budget.savings.amount * exchangeRate.usd).toFixed(0)} USD · 
+                  €{(plan.budget.savings.amount * exchangeRate.eur).toFixed(0)} EUR
+                </p>
+              )
+            ) : loading ? (
+              <div className="flex justify-center mb-4">
+                <div className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--teal)', borderTopColor: 'transparent' }} />
+              </div>
+            ) : null}
 
             {/* Goals */}
             <div className="space-y-3 mb-5">
