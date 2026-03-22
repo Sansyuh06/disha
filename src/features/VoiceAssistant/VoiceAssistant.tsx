@@ -25,6 +25,7 @@ export default function VoiceAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState<string | null>(null);
   const lastAnswerRef = useRef<string>('');
+  const recRef = useRef<any>(null);
 
   const addMessage = (msg: Message) => setMessages(prev => [...prev, msg]);
 
@@ -37,6 +38,11 @@ export default function VoiceAssistant() {
   };
 
   const handleVoiceQuery = () => {
+    if (micState === 'listening' && recRef.current) {
+      recRef.current.stop();
+      return;
+    }
+
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) {
       setError('Speech recognition requires Chrome browser.');
@@ -44,6 +50,7 @@ export default function VoiceAssistant() {
     }
 
     const recognition = new SpeechRec();
+    recRef.current = recognition;
     recognition.lang = selectedLang.code;
     recognition.continuous = false;
     recognition.interimResults = true; // Make it dynamic

@@ -30,6 +30,7 @@ export default function DishaMascot({ onSessionReady }: Props) {
   const [vitaReady, setVitaReady] = useState(false);
   const [micActive, setMicActive] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const recRef = useRef<any>(null);
 
   useEffect(() => {
     checkVitaStatus().then(setVitaReady);
@@ -38,9 +39,14 @@ export default function DishaMascot({ onSessionReady }: Props) {
   const addStep = (s: string) => setStepsLog(prev => [...prev, s]);
 
   const handleMic = () => {
+    if (micActive && recRef.current) {
+      recRef.current.stop();
+      return;
+    }
     const SpeechRec = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRec) { setUserText(''); inputRef.current?.focus(); return; }
     const rec = new SpeechRec();
+    recRef.current = rec;
     rec.lang = language.code;
     rec.interimResults = true; // Make it dynamic
     
