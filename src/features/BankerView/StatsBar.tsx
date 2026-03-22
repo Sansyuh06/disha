@@ -12,7 +12,8 @@ export default function StatsBar() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch('https://date.nager.at/api/v3/PublicHolidays/2025/IN', {
+        const year = new Date().getFullYear();
+        const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/IN`, {
           signal: AbortSignal.timeout(5000),
         });
         const holidays: Holiday[] = await res.json();

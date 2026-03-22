@@ -15,15 +15,15 @@ export default function LanguageGrid({ selected, onSelect }: Props) {
           onClick={() => onSelect(lang)}
           className="flex flex-col items-center justify-center gap-1 p-2 rounded-xl transition-all hover:scale-105"
           style={{
-            border: `2px solid ${selected.code === lang.code ? 'var(--brand-teal)' : '#E2E8F0'}`,
-            backgroundColor: selected.code === lang.code ? 'var(--brand-teal-light)' : 'white',
+            border: `2px solid ${selected.code === lang.code ? 'var(--teal)' : '#E2E8F0'}`,
+            backgroundColor: selected.code === lang.code ? 'var(--teal-light)' : 'white',
             minHeight: 64,
           }}
         >
           <span className="text-2xl leading-none">{lang.flag}</span>
           <span
             className="text-[10px] font-medium leading-tight text-center"
-            style={{ color: selected.code === lang.code ? 'var(--brand-teal)' : 'var(--brand-muted)' }}
+            style={{ color: selected.code === lang.code ? 'var(--teal)' : 'var(--text-muted)' }}
           >
             {lang.native}
           </span>

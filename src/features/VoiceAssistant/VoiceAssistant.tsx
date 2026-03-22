@@ -3,6 +3,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { LANGUAGES } from '../../utils/languages';
 import { askOllama } from '../../utils/ollama';
 import { translate } from '../../utils/libretranslate';
+import { speakWithVita } from '../../utils/vita';
 import LanguageGrid from './LanguageGrid';
 import ConversationBubbles from './ConversationBubbles';
 import { Language } from '../../utils/languages';
@@ -100,12 +101,9 @@ export default function VoiceAssistant() {
 
         setMicState('speaking');
         setStatusText('Speaking...');
-        const utterance = new SpeechSynthesisUtterance(localAnswer);
-        utterance.lang = selectedLang.code;
-        utterance.rate = 0.9;
-        utterance.onend = () => { setMicState('idle'); setStatusText('Tap to speak'); };
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utterance);
+        await speakWithVita(localAnswer, { voice: 'af_heart' });
+        setMicState('idle');
+        setStatusText('Tap to speak');
       } catch (err) {
         setMicState('idle');
         setStatusText('Tap to speak');
@@ -125,7 +123,7 @@ export default function VoiceAssistant() {
   };
 
   const micColors: Record<MicState, string> = {
-    idle: 'var(--brand-teal)',
+    idle: 'var(--teal)',
     listening: '#16A34A',
     processing: '#3B82F6',
     speaking: '#3B82F6',
@@ -134,15 +132,15 @@ export default function VoiceAssistant() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-6">
-        <h1 className="font-heading text-3xl font-semibold text-brand-dark mb-1">Voice Assistant</h1>
-        <p className="text-brand-muted text-sm">Speak in your language — get answers instantly</p>
+        <h1 className="font-heading text-3xl font-semibold mb-1" style={{ color: 'var(--navy-900)' }}>Voice Assistant</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Speak in your language — get answers instantly</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left panel */}
         <div className="space-y-6">
           <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
-            <p className="text-xs font-medium text-brand-muted uppercase tracking-wide mb-3">Choose your language</p>
+            <p className="text-xs font-medium uppercase tracking-wide mb-3" style={{ color: 'var(--text-muted)' }}>Choose your language</p>
             <LanguageGrid selected={selectedLang} onSelect={setSelectedLang} />
           </div>
 
@@ -187,7 +185,7 @@ export default function VoiceAssistant() {
                 )}
               </button>
             </div>
-            <p className="text-sm text-brand-muted">{statusText}</p>
+            <p className="text-sm" style={{ color: 'var(--text-muted)' }}>{statusText}</p>
 
             {error && (
               <div className="w-full bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700 text-center">
@@ -200,11 +198,12 @@ export default function VoiceAssistant() {
         {/* Right panel */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
-            <h3 className="font-heading font-semibold text-sm text-brand-dark">Conversation</h3>
+            <h3 className="font-heading font-semibold text-sm" style={{ color: 'var(--navy-900)' }}>Conversation</h3>
             {messages.length > 0 && (
               <button
                 onClick={() => setMessages([])}
-                className="text-xs text-brand-muted hover:text-red-500 transition-colors"
+                className="text-xs hover:text-red-500 transition-colors"
+                style={{ color: 'var(--text-muted)' }}
               >
                 Clear
               </button>

@@ -170,7 +170,7 @@ const QueueContext = createContext<QueueContextType | null>(null);
 export function QueueProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(reducer, {
     queue: MOCK_CUSTOMERS,
-    stats: { servedToday: 8, avgServiceMinutes: 22 },
+    stats: { servedToday: 0, avgServiceMinutes: 0 },
     activeCustomerToken: null,
   });
 

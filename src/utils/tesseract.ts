@@ -23,8 +23,8 @@ export async function performOCR(
   let owned = false;
 
   if (!worker) {
-    // v7: createWorker(langs, oem?, options?) — omit oem for v7 compatibility
-    worker = await createWorker(['eng', 'hin'], undefined, {
+    // v7: createWorker(langs, options?)
+    worker = await createWorker(['eng', 'hin'], {
       logger: (m: any) => {
         if (m.status === 'loading tesseract core') onProgress?.(5, 'Loading OCR engine...');
         else if (m.status === 'initializing tesseract') onProgress?.(15, 'Initializing...');

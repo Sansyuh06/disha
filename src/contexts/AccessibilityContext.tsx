@@ -132,21 +132,22 @@ function SessionTimeoutDialog({ countdown, onStay }: { countdown: number; onStay
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl">
-        <h3 className="text-xl font-heading font-semibold text-brand-dark mb-2">Are you still there?</h3>
-        <p className="text-brand-muted text-sm mb-6">
-          Session ends in <span className="font-bold text-brand-coral text-lg">{countdown}</span> seconds.
+        <h3 className="text-xl font-heading font-semibold mb-2" style={{ color: 'var(--navy-900)' }}>Are you still there?</h3>
+        <p className="text-sm mb-6" style={{ color: 'var(--text-muted)' }}>
+          Session ends in <span className="font-bold text-lg" style={{ color: 'var(--amber)' }}>{countdown}</span> seconds.
         </p>
         <div className="flex gap-3">
           <button
             onClick={onStay}
-            className="flex-1 bg-brand-teal text-white rounded-lg py-3 font-semibold hover:opacity-90 transition-opacity"
-            style={{ backgroundColor: 'var(--brand-teal)' }}
+            className="flex-1 text-white rounded-lg py-3 font-semibold hover:opacity-90 transition-opacity"
+            style={{ backgroundColor: 'var(--teal)' }}
           >
             I'm still here
           </button>
           <button
             onClick={() => { window.location.href = '/'; }}
-            className="flex-1 border border-gray-200 rounded-lg py-3 text-brand-muted hover:bg-gray-50 transition-colors"
+            className="flex-1 border border-gray-200 rounded-lg py-3 hover:bg-gray-50 transition-colors"
+            style={{ color: 'var(--text-muted)' }}
           >
             End session
           </button>

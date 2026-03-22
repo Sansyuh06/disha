@@ -55,7 +55,9 @@ export default function BankerDashboard() {
         </div>
 
         {/* Queue list */}
-        <QueueSidebar />
+        <div className="flex-1 overflow-y-auto min-h-0">
+          <QueueSidebar />
+        </div>
 
         {/* Sidebar footer */}
         <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
