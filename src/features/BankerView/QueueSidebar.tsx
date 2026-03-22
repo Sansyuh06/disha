@@ -3,7 +3,7 @@ import { useQueue, QueueItem } from '../../contexts/QueueContext';
 
 const TASK_COLORS: Record<string, { bg: string; text: string }> = {
   loan:      { bg: 'var(--brand-coral-light)',  text: 'var(--brand-coral)' },
-  account:   { bg: 'var(--brand-teal-light)',   text: 'var(--brand-teal)' },
+  account:   { bg: 'var(--teal-light)',   text: 'var(--teal)' },
   deposit:   { bg: '#EFF6FF',                   text: '#3B82F6' },
   emergency: { bg: '#FFFBEB',                   text: '#D97706' },
   query:     { bg: '#F8FAFC',                   text: '#64748B' },
@@ -95,10 +95,10 @@ export default function QueueSidebar() {
               />
             </div>
             <div className="flex gap-2">
-              <button onClick={handleAdd} className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold" style={{ backgroundColor: 'var(--brand-teal)' }}>
+              <button onClick={handleAdd} className="flex-1 py-2.5 rounded-xl text-white text-sm font-semibold" style={{ backgroundColor: 'var(--teal)' }}>
                 Add to Queue
               </button>
-              <button onClick={() => setAddOpen(false)} className="px-4 py-2.5 rounded-xl border text-sm text-brand-muted hover:bg-gray-50">
+              <button onClick={() => setAddOpen(false)} className="px-4 py-2.5 rounded-xl border text-sm text-[var(--text-muted)] hover:bg-gray-50">
                 Cancel
               </button>
             </div>
@@ -118,7 +118,7 @@ function CustomerCard({ customer, isActive, onClick }: { customer: QueueItem; is
       className="w-full text-left rounded-xl p-3 transition-all hover:bg-white/10"
       style={{
         backgroundColor: isActive ? 'rgba(10,191,163,0.15)' : 'rgba(255,255,255,0.05)',
-        borderLeft: isActive ? '3px solid var(--brand-teal)' : '3px solid transparent',
+        borderLeft: isActive ? '3px solid var(--teal)' : '3px solid transparent',
       }}
     >
       <div className="flex items-center gap-2 mb-1">

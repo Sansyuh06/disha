@@ -32,8 +32,8 @@ export default function BudgetDonut({ budget, totalSalary }: Props) {
         />
         {/* Inner hole */}
         <div className="absolute inset-4 bg-white rounded-full flex flex-col items-center justify-center">
-          <p className="text-xs text-brand-muted">Take-home</p>
-          <p className="text-xs font-bold text-brand-dark">₹{totalSalary.toLocaleString('en-IN')}</p>
+          <p className="text-xs text-[var(--text-muted)]">Take-home</p>
+          <p className="text-xs font-bold text-[var(--navy-900)]">₹{totalSalary.toLocaleString('en-IN')}</p>
         </div>
       </div>
 
@@ -54,10 +54,10 @@ function LegendRow({
     <div className="flex items-start gap-2">
       <div className="w-3 h-3 rounded-full mt-0.5 shrink-0" style={{ backgroundColor: color }} />
       <div>
-        <p className="text-sm font-medium text-brand-dark">
+        <p className="text-sm font-medium text-[var(--navy-900)]">
           {label} — ₹{amount.toLocaleString('en-IN')} ({pct}%)
         </p>
-        <p className="text-xs text-brand-muted">{categories.slice(0, 3).join(', ')}</p>
+        <p className="text-xs text-[var(--text-muted)]">{categories.slice(0, 3).join(', ')}</p>
       </div>
     </div>
   );

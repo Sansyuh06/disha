@@ -12,7 +12,7 @@ let vitaAvailable: boolean | null = null;
 
 export async function checkVitaStatus(): Promise<boolean> {
   try {
-    const res = await fetch('http://localhost:8181/status', {
+    const res = await fetch('http://localhost:8080/status', {
       signal: AbortSignal.timeout(2000),
     });
     vitaAvailable = res.ok;
@@ -29,7 +29,7 @@ export async function speakWithVita(text: string, opts: VitaOptions = {}): Promi
   // Try Vita (Kokoro-82M) first
   if (vitaAvailable !== false) {
     try {
-      const res = await fetch('http://localhost:8181/speak', {
+      const res = await fetch('http://localhost:8080/speak', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: text.slice(0, 500), voice, speed }),

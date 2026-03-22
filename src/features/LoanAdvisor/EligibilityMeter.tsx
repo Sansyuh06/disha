@@ -121,7 +121,7 @@ export default function EligibilityMeter({ value, dti, cibil, income, projectedE
       </div>
 
       <div className="text-center mt-3 mb-6">
-        <p className="text-sm font-semibold text-brand-dark uppercase tracking-wide">Approval Odds</p>
+        <p className="text-sm font-semibold text-[var(--navy-900)] uppercase tracking-wide">Approval Odds</p>
         <p className="text-xs mt-1" style={{ color: 'var(--text-muted)' }}>Required: 65% for standard rates</p>
       </div>
 

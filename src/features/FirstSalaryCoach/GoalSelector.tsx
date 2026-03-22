@@ -45,7 +45,7 @@ export default function GoalSelector({ selected, onChange, onBack, onGenerate, l
 
   return (
     <div className="space-y-5">
-      <p className="text-brand-muted text-sm">Pick 1–3 goals that matter to you most</p>
+      <p className="text-[var(--text-muted)] text-sm">Pick 1–3 goals that matter to you most</p>
 
       {selected.length === 3 && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-700">
@@ -63,15 +63,15 @@ export default function GoalSelector({ selected, onChange, onBack, onGenerate, l
                 disabled={!sel && selected.length >= 3}
                 className="flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all hover:scale-105 disabled:opacity-40 disabled:cursor-not-allowed"
                 style={{
-                  borderColor: sel ? 'var(--brand-teal)' : '#E2E8F0',
-                  backgroundColor: sel ? 'var(--brand-teal-light)' : 'white',
+                  borderColor: sel ? 'var(--teal)' : '#E2E8F0',
+                  backgroundColor: sel ? 'var(--teal-light)' : 'white',
                 }}
               >
                 <span className="text-3xl">{goal.emoji}</span>
-                <span className="text-xs font-medium text-center leading-tight" style={{ color: sel ? 'var(--brand-teal)' : 'var(--brand-dark)' }}>
+                <span className="text-xs font-medium text-center leading-tight" style={{ color: sel ? 'var(--teal)' : 'var(--navy-900)' }}>
                   {goal.name}
                 </span>
-                <span className="text-xs text-brand-muted">₹{goal.target.toLocaleString('en-IN')}</span>
+                <span className="text-xs text-[var(--text-muted)]">₹{goal.target.toLocaleString('en-IN')}</span>
               </button>
 
               {sel && (
@@ -99,14 +99,14 @@ export default function GoalSelector({ selected, onChange, onBack, onGenerate, l
       )}
 
       <div className="flex gap-3">
-        <button onClick={onBack} className="px-5 py-3 border rounded-xl text-sm text-brand-muted hover:bg-gray-50">
+        <button onClick={onBack} className="px-5 py-3 border rounded-xl text-sm text-[var(--text-muted)] hover:bg-gray-50">
           ← Back
         </button>
         <button
           onClick={onGenerate}
           disabled={selected.length === 0 || loading}
           className="flex-1 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-          style={{ backgroundColor: 'var(--brand-teal)' }}
+          style={{ backgroundColor: 'var(--teal)' }}
         >
           {loading ? (
             <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Generating plan...</>

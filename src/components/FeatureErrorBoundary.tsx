@@ -34,7 +34,7 @@ function ErrorFallback({ message }: { message: string }) {
             <button
               onClick={() => window.location.reload()}
               className="px-6 py-2.5 rounded-lg text-white font-semibold text-sm"
-              style={{ backgroundColor: 'var(--brand-teal)' }}
+              style={{ backgroundColor: 'var(--teal)' }}
             >
               Reload
             </button>

@@ -61,12 +61,12 @@ export default function CameraCapture({ onCapture, previewUrl }: Props) {
             playsInline
             muted
             className="w-full max-h-64 object-cover rounded-2xl border-2"
-            style={{ borderColor: 'var(--brand-teal)' }}
+            style={{ borderColor: 'var(--teal)' }}
           />
           <button
             onClick={capture}
             className="w-full py-3 rounded-xl text-white font-semibold text-sm"
-            style={{ backgroundColor: 'var(--brand-teal)' }}
+            style={{ backgroundColor: 'var(--teal)' }}
           >
             📸 Capture Document
           </button>
@@ -74,11 +74,11 @@ export default function CameraCapture({ onCapture, previewUrl }: Props) {
       ) : (
         <div className="text-center py-8">
           <div className="text-5xl mb-4">📷</div>
-          <p className="text-brand-muted text-sm mb-4">Camera will open to capture your document</p>
+          <p className="text-[var(--text-muted)] text-sm mb-4">Camera will open to capture your document</p>
           <button
             onClick={startCamera}
             className="px-6 py-3 rounded-xl text-white font-semibold text-sm"
-            style={{ backgroundColor: 'var(--brand-teal)' }}
+            style={{ backgroundColor: 'var(--teal)' }}
           >
             Open Camera
           </button>

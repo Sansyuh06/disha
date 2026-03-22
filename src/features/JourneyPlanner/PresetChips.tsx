@@ -12,7 +12,7 @@ const CHIPS = [
 export default function PresetChips({ onSelect }: { onSelect: (text: string) => void }) {
   return (
     <div className="mt-4">
-      <p className="text-xs text-brand-muted mb-2">Or choose a common task:</p>
+      <p className="text-xs text-[var(--text-muted)] mb-2">Or choose a common task:</p>
       <div className="flex flex-wrap gap-2">
         {CHIPS.map(chip => (
           <button
@@ -20,9 +20,9 @@ export default function PresetChips({ onSelect }: { onSelect: (text: string) => 
             onClick={() => onSelect(chip.text)}
             className="text-sm px-3 py-1.5 rounded-full border transition-all hover:scale-105"
             style={{
-              borderColor: 'var(--brand-teal)',
-              backgroundColor: 'var(--brand-teal-light)',
-              color: 'var(--brand-teal)',
+              borderColor: 'var(--teal)',
+              backgroundColor: 'var(--teal-light)',
+              color: 'var(--teal)',
             }}
           >
             {chip.label}

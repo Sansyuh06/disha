@@ -59,7 +59,7 @@ export default function ExtractedForm({ data, onReset }: Props) {
       <div className="flex items-center gap-3">
         <span
           className="px-3 py-1 rounded-full text-sm font-medium"
-          style={{ backgroundColor: 'var(--brand-teal-light)', color: 'var(--brand-teal)' }}
+          style={{ backgroundColor: 'var(--teal-light)', color: 'var(--teal)' }}
         >
           {docType} detected
         </span>
@@ -79,7 +79,7 @@ export default function ExtractedForm({ data, onReset }: Props) {
 
           return (
             <div key={key}>
-              <label className="block text-xs font-medium text-brand-muted mb-1">{label}</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{label}</label>
               <div className="relative">
                 <input
                   type="text"
@@ -107,14 +107,14 @@ export default function ExtractedForm({ data, onReset }: Props) {
           onClick={handleSave}
           disabled={saved}
           className="flex-1 py-3 rounded-xl text-white font-semibold text-sm transition-all disabled:opacity-60"
-          style={{ backgroundColor: 'var(--brand-teal)' }}
+          style={{ backgroundColor: 'var(--teal)' }}
         >
           {saved ? '✓ Saved! Redirecting...' : 'Confirm & Save'}
         </button>
         <button
           onClick={onReset}
           className="px-5 py-3 border rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-          style={{ borderColor: 'var(--border)', color: 'var(--brand-muted)' }}
+          style={{ borderColor: 'var(--border)', color: 'var(--text-muted)' }}
         >
           Scan Another
         </button>

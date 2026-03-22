@@ -34,13 +34,13 @@ export default function JourneySlip({ journey }: { journey: JourneyData }) {
         <QRCodeSVG value={qrContent} size={72} level="M" />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-medium text-brand-dark">Token: <span style={{ color: 'var(--brand-teal)' }}>{token}</span></p>
-        <p className="text-xs text-brand-muted mt-0.5">{journey.task_summary} · {journey.journey.length} stops · ~{journey.total_minutes} min</p>
+        <p className="text-sm font-medium text-[var(--navy-900)]">Token: <span style={{ color: 'var(--teal)' }}>{token}</span></p>
+        <p className="text-xs text-[var(--text-muted)] mt-0.5">{journey.task_summary} · {journey.journey.length} stops · ~{journey.total_minutes} min</p>
       </div>
       <button
         onClick={handlePrint}
         className="shrink-0 px-4 py-2 text-sm font-medium border rounded-xl hover:bg-gray-50 transition-colors"
-        style={{ borderColor: 'var(--brand-teal)', color: 'var(--brand-teal)' }}
+        style={{ borderColor: 'var(--teal)', color: 'var(--teal)' }}
       >
         🖨️ Print Slip
       </button>

@@ -77,7 +77,7 @@ Document text: ${text}`,
         <button
           onClick={run}
           className="w-full py-3 rounded-xl text-white font-semibold text-sm"
-          style={{ backgroundColor: 'var(--brand-teal)' }}
+          style={{ backgroundColor: 'var(--teal)' }}
         >
           🔍 Scan This Document
         </button>
@@ -88,19 +88,19 @@ Document text: ${text}`,
   return (
     <div className="mt-4 space-y-3">
       <div>
-        <div className="flex justify-between text-xs text-brand-muted mb-1">
+        <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
           <span>{status}</span>
           <span>{progress}%</span>
         </div>
         <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-300"
-            style={{ width: `${progress}%`, backgroundColor: 'var(--brand-teal)' }}
+            style={{ width: `${progress}%`, backgroundColor: 'var(--teal)' }}
           />
         </div>
       </div>
       {confidence > 0 && (
-        <p className="text-xs text-brand-muted">Scan quality: {Math.round(confidence)}%</p>
+        <p className="text-xs text-[var(--text-muted)]">Scan quality: {Math.round(confidence)}%</p>
       )}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">

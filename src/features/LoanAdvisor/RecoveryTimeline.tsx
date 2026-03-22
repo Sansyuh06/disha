@@ -32,9 +32,9 @@ export default function RecoveryTimeline({ plan }: { plan: PlanMonth[] }) {
                 onClick={() => toggle(month.month)}
                 className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm font-heading transition-all shrink-0"
                 style={{
-                  backgroundColor: done ? '#16A34A' : 'var(--brand-teal-light)',
-                  color: done ? 'white' : 'var(--brand-teal)',
-                  border: `2px solid ${done ? '#16A34A' : 'var(--brand-teal)'}`,
+                  backgroundColor: done ? '#16A34A' : 'var(--teal-light)',
+                  color: done ? 'white' : 'var(--teal)',
+                  border: `2px solid ${done ? '#16A34A' : 'var(--teal)'}`,
                 }}
               >
                 {done ? '✓' : `M${month.month}`}
@@ -45,19 +45,19 @@ export default function RecoveryTimeline({ plan }: { plan: PlanMonth[] }) {
             {/* Content */}
             <div className="flex-1 pb-4">
               <div className="flex items-center justify-between mb-1">
-                <h4 className="font-heading font-semibold text-sm text-brand-dark">{month.theme}</h4>
+                <h4 className="font-heading font-semibold text-sm text-[var(--navy-900)]">{month.theme}</h4>
                 <span
                   className="text-xs px-2 py-0.5 rounded-full font-medium"
-                  style={{ backgroundColor: 'var(--brand-teal-light)', color: 'var(--brand-teal)' }}
+                  style={{ backgroundColor: 'var(--teal-light)', color: 'var(--teal)' }}
                 >
                   +{month.expected_cibil_gain} pts
                 </span>
               </div>
-              <p className="text-xs text-brand-dark mb-0.5">➤ {month.primary_action}</p>
+              <p className="text-xs text-[var(--navy-900)] mb-0.5">➤ {month.primary_action}</p>
               {month.secondary_action && (
-                <p className="text-xs text-brand-muted">➤ {month.secondary_action}</p>
+                <p className="text-xs text-[var(--text-muted)]">➤ {month.secondary_action}</p>
               )}
-              <p className="text-xs font-medium mt-1.5" style={{ color: 'var(--brand-teal)' }}>
+              <p className="text-xs font-medium mt-1.5" style={{ color: 'var(--teal)' }}>
                 🏁 {month.milestone}
               </p>
             </div>

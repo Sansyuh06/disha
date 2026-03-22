@@ -18,29 +18,29 @@ export default function SalaryCapture({ salary, onChange, onNext }: Props) {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm space-y-4">
-      <p className="text-sm text-brand-muted">Enter your salary details or calculate from gross</p>
+      <p className="text-sm text-[var(--text-muted)]">Enter your salary details or calculate from gross</p>
 
       <div>
-        <label className="text-xs font-medium text-brand-muted block mb-1">Gross Salary</label>
+        <label className="text-xs font-medium text-[var(--text-muted)] block mb-1">Gross Salary</label>
         <AmountInput prefix="₹" value={gross} onChange={setGross} />
       </div>
 
       <div>
-        <label className="text-xs font-medium text-brand-muted block mb-1">Total Deductions (PF, TDS, etc.)</label>
+        <label className="text-xs font-medium text-[var(--text-muted)] block mb-1">Total Deductions (PF, TDS, etc.)</label>
         <AmountInput prefix="₹" value={deductions} onChange={setDeductions} />
       </div>
 
       <div>
-        <label className="text-xs font-medium text-brand-muted block mb-1">Net Take-Home Salary</label>
+        <label className="text-xs font-medium text-[var(--text-muted)] block mb-1">Net Take-Home Salary</label>
         <AmountInput prefix="₹" value={salary} onChange={onChange} />
-        {gross > 0 && <p className="text-xs text-brand-muted mt-1">Auto-calculated from gross − deductions</p>}
+        {gross > 0 && <p className="text-xs text-[var(--text-muted)] mt-1">Auto-calculated from gross − deductions</p>}
       </div>
 
       <button
         onClick={onNext}
         disabled={salary <= 0}
         className="w-full py-3 rounded-xl text-white font-semibold text-sm disabled:opacity-50"
-        style={{ backgroundColor: 'var(--brand-teal)' }}
+        style={{ backgroundColor: 'var(--teal)' }}
       >
         Next: Set Your Goals →
       </button>
@@ -51,7 +51,7 @@ export default function SalaryCapture({ salary, onChange, onNext }: Props) {
 function AmountInput({ prefix, value, onChange }: { prefix: string; value: number; onChange: (v: number) => void }) {
   return (
     <div className="flex border border-gray-200 rounded-xl overflow-hidden focus-within:border-teal-400 transition-colors">
-      <span className="px-3 py-2.5 bg-gray-50 text-brand-muted text-sm border-r border-gray-200">{prefix}</span>
+      <span className="px-3 py-2.5 bg-gray-50 text-[var(--text-muted)] text-sm border-r border-gray-200">{prefix}</span>
       <input
         type="number"
         value={value || ''}
