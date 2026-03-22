@@ -1,5 +1,29 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
+export type UserType = 'standard' | 'elderly' | 'firstTime' | 'distressed';
+export type EmotionalContext = 'normal' | 'confused' | 'bereavement' | 'urgent';
+export type UIMode = 'standard' | 'simplified' | 'compassionate' | 'guided';
+
+export interface IntentProfile {
+  intent: string;
+  taskType: string;
+  userType: UserType;
+  emotion: EmotionalContext;
+  uiMode: UIMode;
+  autoRoute: string | null;
+  confidence: number;
+}
+
+export interface PreVisitSession {
+  sessionCode: string;
+  qrData: string;
+  task: string;
+  documents: string[];
+  estimatedWait: number;
+  bestTime: string;
+  createdAt: Date;
+}
+
 export interface ExtractedData {
   document_type?: string;
   full_name?: string | null;
@@ -37,6 +61,8 @@ interface CustomerState {
   journey: JourneyData | null;
   token: string;
   sessionId: string;
+  intentProfile: IntentProfile | null;
+  preVisitSession: PreVisitSession | null;
 }
 
 type CustomerAction =
@@ -44,6 +70,8 @@ type CustomerAction =
   | { type: 'SET_JOURNEY'; journey: JourneyData }
   | { type: 'COMPLETE_STEP'; stepNum: number }
   | { type: 'SET_TOKEN'; token: string }
+  | { type: 'SET_INTENT'; profile: IntentProfile }
+  | { type: 'SET_PRE_VISIT'; session: PreVisitSession }
   | { type: 'CLEAR_SESSION' };
 
 const initialState: CustomerState = {
@@ -51,6 +79,8 @@ const initialState: CustomerState = {
   journey: null,
   token: '',
   sessionId: `S${Date.now()}`,
+  intentProfile: null,
+  preVisitSession: null,
 };
 
 function reducer(state: CustomerState, action: CustomerAction): CustomerState {
@@ -72,6 +102,10 @@ function reducer(state: CustomerState, action: CustomerAction): CustomerState {
       };
     case 'SET_TOKEN':
       return { ...state, token: action.token };
+    case 'SET_INTENT':
+      return { ...state, intentProfile: action.profile };
+    case 'SET_PRE_VISIT':
+      return { ...state, preVisitSession: action.session };
     case 'CLEAR_SESSION':
       return { ...initialState, sessionId: `S${Date.now()}` };
     default:

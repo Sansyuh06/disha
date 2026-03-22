@@ -6,7 +6,11 @@ import { AccessibilityProvider } from './contexts/AccessibilityContext.tsx'
 import { CustomerProvider } from './contexts/CustomerContext.tsx'
 import { QueueProvider } from './contexts/QueueContext.tsx'
 import { BrowserRouter } from 'react-router-dom'
+import { checkVitaStatus } from './utils/vita'
 import './index.css'
+
+// Non-blocking warmup
+checkVitaStatus();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

@@ -22,6 +22,8 @@ export interface QueueItem {
   escalated?: boolean;
   referredToLoan?: boolean;
   completedAt?: Date;
+  aiSuggestion?: string;
+  preVisitCode?: string;
 }
 
 interface QueueStats {

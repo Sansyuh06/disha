@@ -11,6 +11,8 @@ import VoiceAssistant from './features/VoiceAssistant/VoiceAssistant';
 import FirstSalaryCoach from './features/FirstSalaryCoach/FirstSalaryCoach';
 import BereavementCompanion from './features/BereavementMode/BereavementCompanion';
 import BankerDashboard from './features/BankerView/BankerDashboard';
+import PreVisitAssistant from './features/PreVisit/PreVisitAssistant';
+import TransactionOutput from './features/TransactionOutput/TransactionOutput';
 import DemoTour from './components/DemoTour';
 import FeatureErrorBoundary from './components/FeatureErrorBoundary';
 
@@ -59,6 +61,16 @@ export default function App() {
           <Route path="bereavement" element={
             <FeatureErrorBoundary>
               <BereavementCompanion />
+            </FeatureErrorBoundary>
+          } />
+          <Route path="previsit" element={
+            <FeatureErrorBoundary>
+              <PreVisitAssistant />
+            </FeatureErrorBoundary>
+          } />
+          <Route path="transaction" element={
+            <FeatureErrorBoundary>
+              <TransactionOutput />
             </FeatureErrorBoundary>
           } />
         </Route>

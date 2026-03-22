@@ -5,6 +5,7 @@ import { LANGUAGES } from '../utils/languages';
 import OllamaStatus from '../components/OllamaStatus';
 import AccessibilityToggle from '../components/AccessibilityToggle';
 import DishaLogo from '../components/DishaLogo';
+import DishaMascot from '../components/DishaMascot';
 import { motion } from 'framer-motion';
 
 const stagger = {
@@ -149,6 +150,18 @@ export default function Home() {
               </h2>
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                 Choose your role to get started
+              </p>
+            </motion.div>
+
+            {/* DISHA AI Mascot — primary entry point */}
+            <motion.div variants={stagger.item} className="mb-4">
+              <DishaMascot onSessionReady={() => {}} />
+            </motion.div>
+
+            {/* Separator */}
+            <motion.div variants={stagger.item} className="mb-4">
+              <p style={{ textAlign: 'center', fontSize: '12px', color: '#9FADC8', margin: '0' }}>
+                — or select directly —
               </p>
             </motion.div>
 
