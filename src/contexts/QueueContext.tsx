@@ -94,20 +94,24 @@ function reducer(state: QueueState, action: QueueAction): QueueState {
       };
 
     case 'COMPLETE_CUSTOMER': {
+      const now = new Date();
       const customer = state.queue.find(c => c.token === action.token);
-      const completedAt = new Date();
-      const serviceMins = customer
-        ? (completedAt.getTime() - customer.arrivedAt.getTime()) / 60000
+      const serviceMinutes = customer
+        ? Math.round((now.getTime() - customer.arrivedAt.getTime()) / 60000)
         : 0;
       const newServed = state.stats.servedToday + 1;
-      const newAvg = (state.stats.avgServiceMinutes * state.stats.servedToday + serviceMins) / newServed;
+      const newAvg = Math.round(
+        (state.stats.avgServiceMinutes * state.stats.servedToday + serviceMinutes) / newServed
+      );
       return {
         ...state,
-        activeCustomerToken: null,
-        stats: { servedToday: newServed, avgServiceMinutes: Math.round(newAvg) },
         queue: state.queue.map(c =>
-          c.token === action.token ? { ...c, status: 'complete', completedAt } : c
+          c.token === action.token
+            ? { ...c, status: 'complete', completedAt: now }
+            : c
         ),
+        activeCustomerToken: state.activeCustomerToken === action.token ? null : state.activeCustomerToken,
+        stats: { servedToday: newServed, avgServiceMinutes: newAvg },
       };
     }
 

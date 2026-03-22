@@ -1,75 +1,86 @@
-import React from 'react';
-import QueueSidebar from './QueueSidebar';
-import CustomerDetailPanel from './CustomerDetailPanel';
-import StatsBar from './StatsBar';
+import React, { useState } from 'react';
 import { useQueue } from '../../contexts/QueueContext';
-import { useNavigate } from 'react-router-dom';
+import QueueSidebar from './QueueSidebar';
+import StatsBar from './StatsBar';
+import CustomerDetailPanel from './CustomerDetailPanel';
+import DishaLogo from '../../components/DishaLogo';
+import OllamaStatus from '../../components/OllamaStatus';
 
 export default function BankerDashboard() {
-  const { state } = useQueue();
-  const navigate = useNavigate();
-  const activeCustomer = state.queue.find(c => c.token === state.activeCustomerToken);
+  const { state, dispatch } = useQueue();
+  const activeCustomer = state.queue.find(c => c.token === state.activeCustomerToken) || null;
 
   return (
-    <div className="h-screen flex overflow-hidden">
-      {/* Dark sidebar */}
+    <div className="flex h-screen overflow-hidden">
+      {/* ── Dark Sidebar ────────────────────────────── */}
       <aside
-        className="w-72 flex flex-col shrink-0 overflow-y-auto"
-        style={{ backgroundColor: 'var(--brand-dark)' }}
+        className="flex flex-col shrink-0"
+        style={{
+          width: '280px',
+          background: 'linear-gradient(180deg, #0D1B3E 0%, #122248 100%)',
+        }}
       >
-        {/* Header */}
-        <div className="px-5 py-5 border-b border-white/10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ backgroundColor: 'var(--brand-teal)' }}>
-              <span className="text-white font-bold text-sm font-heading">D</span>
+        {/* Staff card */}
+        <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <DishaLogo variant="light" size={32} />
+          <div className="mt-4 flex items-center gap-3">
+            <div
+              className="w-10 h-10 rounded-full flex items-center justify-center font-heading font-bold text-sm"
+              style={{ background: 'rgba(10,191,163,0.15)', color: '#0ABFA3' }}
+            >
+              RP
             </div>
             <div>
-              <h2 className="text-white font-heading font-semibold text-sm">DISHA Staff</h2>
-              <p className="text-gray-400 text-xs">Union Bank of India</p>
+              <p className="text-sm font-semibold" style={{ color: 'rgba(255,255,255,0.9)' }}>Rajesh Patel</p>
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>Counter 3 · On Duty</p>
             </div>
-          </div>
-          <div className="bg-white/5 rounded-xl px-3 py-2">
-            <p className="text-white text-sm font-medium">Priya Sharma</p>
-            <p className="text-gray-400 text-xs">Counter 4 · Loans & Accounts</p>
+            <div className="ml-auto w-2.5 h-2.5 rounded-full" style={{ background: '#22C55E', boxShadow: '0 0 6px #22C55E' }} />
           </div>
         </div>
 
-        {/* Quick stats */}
-        <div className="px-4 py-3 grid grid-cols-2 gap-2 border-b border-white/10">
-          <div className="bg-white/5 rounded-xl p-3 text-center">
-            <p className="text-white font-bold text-xl font-heading">{state.stats.servedToday}</p>
-            <p className="text-gray-400 text-[10px]">Served today</p>
+        {/* Quick stats in sidebar */}
+        <div className="px-5 py-4 grid grid-cols-2 gap-3" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+          <div>
+            <p className="text-lg font-heading font-bold" style={{ color: '#0ABFA3' }}>
+              {state.stats.servedToday}
+            </p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Served</p>
           </div>
-          <div className="bg-white/5 rounded-xl p-3 text-center">
-            <p className="text-white font-bold text-xl font-heading">{state.queue.filter(c => c.status === 'waiting' || c.status === 'serving').length}</p>
-            <p className="text-gray-400 text-[10px]">In queue</p>
+          <div>
+            <p className="text-lg font-heading font-bold" style={{ color: 'rgba(255,255,255,0.85)' }}>
+              {state.queue.filter(c => c.status !== 'complete').length}
+            </p>
+            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.35)' }}>Waiting</p>
           </div>
         </div>
 
-        {/* Queue */}
-        <div className="flex-1 overflow-hidden">
-          <QueueSidebar />
-        </div>
+        {/* Queue list */}
+        <QueueSidebar />
 
-        {/* Footer nav */}
-        <div className="px-4 py-4 border-t border-white/10">
-          <button
-            onClick={() => navigate('/')}
-            className="w-full text-xs text-gray-400 hover:text-white transition-colors py-2"
-          >
-            ← Back to Home
-          </button>
+        {/* Sidebar footer */}
+        <div className="px-4 py-3" style={{ borderTop: '1px solid rgba(255,255,255,0.08)' }}>
+          <OllamaStatus />
         </div>
       </aside>
 
-      {/* Main panel */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-surface">
+      {/* ── Main Panel ──────────────────────────────── */}
+      <div className="flex-1 flex flex-col overflow-hidden" style={{ background: 'var(--surface)' }}>
         <StatsBar />
         <div className="flex-1 overflow-y-auto">
           {activeCustomer ? (
             <CustomerDetailPanel customer={activeCustomer} />
           ) : (
-            <EmptyState />
+            <div className="flex-1 flex items-center justify-center h-full">
+              <div className="text-center">
+                <EmptyStateSVG />
+                <p className="font-heading font-semibold text-lg mt-4" style={{ color: 'var(--navy-900)' }}>
+                  Select a customer
+                </p>
+                <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
+                  Choose a customer from the queue to begin service
+                </p>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -77,14 +88,18 @@ export default function BankerDashboard() {
   );
 }
 
-function EmptyState() {
+function EmptyStateSVG() {
   return (
-    <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-      <div className="text-6xl mb-4">👈</div>
-      <h3 className="font-heading font-semibold text-brand-dark text-xl mb-2">Select a Customer</h3>
-      <p className="text-brand-muted text-sm max-w-xs">
-        Click any customer in the queue to see their details, documents, and AI-suggested greeting.
-      </p>
-    </div>
+    <svg width="120" height="100" viewBox="0 0 120 100" fill="none" className="mx-auto">
+      <rect x="20" y="15" width="80" height="60" rx="8" fill="var(--surface-2)" stroke="var(--border)" strokeWidth="1.5"/>
+      <rect x="32" y="30" width="20" height="3" rx="1.5" fill="var(--border-2)" />
+      <rect x="32" y="38" width="40" height="3" rx="1.5" fill="var(--border)" />
+      <rect x="32" y="46" width="30" height="3" rx="1.5" fill="var(--border)" />
+      <rect x="32" y="54" width="35" height="3" rx="1.5" fill="var(--border)" />
+      <circle cx="82" cy="35" r="8" fill="var(--navy-100)" stroke="var(--border-2)" strokeWidth="1" />
+      <path d="M79 35l2 2 4-4" stroke="var(--navy-800)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <rect x="40" y="70" width="40" height="10" rx="5" fill="var(--navy-100)" />
+      <rect x="50" y="73" width="20" height="4" rx="2" fill="var(--navy-800)" opacity="0.3" />
+    </svg>
   );
 }

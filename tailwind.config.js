@@ -9,21 +9,24 @@ export default {
     extend: {
       fontFamily: {
         heading: ['"Plus Jakarta Sans"', 'sans-serif'],
-        body: ['Inter', 'sans-serif'],
+        body: ['"DM Sans"', 'sans-serif'],
       },
       colors: {
-        brand: {
-          teal: '#0ABFA3',
-          'teal-light': '#E1F5EE',
-          coral: '#FF6B35',
-          'coral-light': '#FFF0EB',
-          purple: '#7C5CBF',
-          'purple-light': '#EEEDFE',
-          dark: '#0F172A',
-          muted: '#64748B',
+        navy: {
+          900: '#0D1B3E',
+          800: '#1B3A8E',
+          700: '#2548A8',
+          600: '#3560C0',
+          100: '#E8EDF8',
+          50:  '#F2F5FC',
         },
-        surface: '#F8FAFC',
-        border: '#E2E8F0',
+        teal: {
+          DEFAULT: '#0ABFA3',
+          dark: '#089B84',
+          light: '#E1F5EE',
+        },
+        surface: '#F2F5FC',
+        border: '#DDE4F5',
       },
       borderRadius: {
         lg: 'var(--radius)',
