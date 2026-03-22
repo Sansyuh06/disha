@@ -46,7 +46,7 @@ export default function LoanAdvisor() {
 
   const cibilLabel = cibil < 550 ? { text: 'Poor', color: '#DC2626' }
     : cibil < 650 ? { text: 'Fair', color: '#F59E0B' }
-    : cibil < 750 ? { text: 'Good', color: 'var(--brand-teal)' }
+    : cibil < 750 ? { text: 'Good', color: 'var(--teal)' }
     : { text: 'Excellent', color: '#16A34A' };
 
   const handleSubmit = async () => {
@@ -80,8 +80,8 @@ Return ONLY this JSON structure:
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="font-heading text-3xl font-semibold text-brand-dark mb-1">Loan Eligibility Advisor</h1>
-        <p className="text-brand-muted text-sm">Understand your loan status and get a clear improvement plan</p>
+        <h1 className="font-heading text-3xl font-semibold mb-1" style={{ color: 'var(--navy-900)' }}>Loan Eligibility Advisor</h1>
+        <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Understand your loan status and get a clear improvement plan</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -89,7 +89,7 @@ Return ONLY this JSON structure:
         <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm space-y-5">
           {/* CIBIL Slider */}
           <div>
-            <label className="text-sm font-medium text-brand-dark">CIBIL Score</label>
+            <label className="text-sm font-medium block mb-2" style={{ color: 'var(--navy-900)' }}>CIBIL Score</label>
             <div className="flex items-center gap-3 mt-2">
               <span className="text-3xl font-bold font-heading" style={{ color: cibilLabel.color }}>{cibil}</span>
               <span className="text-xs px-2 py-0.5 rounded-full font-medium text-white" style={{ backgroundColor: cibilLabel.color }}>{cibilLabel.text}</span>
@@ -97,10 +97,10 @@ Return ONLY this JSON structure:
             <input
               type="range" min={300} max={900} step={1} value={cibil}
               onChange={e => setCibil(Number(e.target.value))}
-              className="w-full mt-2 accent-teal-500"
-              style={{ accentColor: 'var(--brand-teal)' }}
+              className="w-full mt-2"
+              style={{ accentColor: 'var(--teal)' }}
             />
-            <div className="flex justify-between text-xs text-brand-muted">
+            <div className="flex justify-between text-xs" style={{ color: 'var(--text-muted)' }}>
               <span>300</span><span>600</span><span>900</span>
             </div>
           </div>
@@ -110,17 +110,17 @@ Return ONLY this JSON structure:
           <NumberInput label="Loan Amount Required" prefix="₹" value={loanAmount} onChange={setLoanAmount} />
 
           <div>
-            <label className="text-sm font-medium text-brand-dark block mb-2">Loan Type</label>
+            <label className="text-sm font-medium block mb-2" style={{ color: 'var(--navy-900)' }}>Loan Type</label>
             <div className="flex flex-wrap gap-2">
               {LOAN_TYPES.map(lt => (
                 <button
                   key={lt}
                   onClick={() => setLoanType(lt)}
-                  className="text-xs px-3 py-1.5 rounded-full border transition-all"
+                  className="text-xs px-3 py-1.5 rounded-full border transition-all hover:scale-105"
                   style={{
-                    borderColor: loanType === lt ? 'var(--brand-teal)' : 'var(--border)',
-                    backgroundColor: loanType === lt ? 'var(--brand-teal)' : 'white',
-                    color: loanType === lt ? 'white' : 'var(--brand-muted)',
+                    borderColor: loanType === lt ? 'var(--teal)' : 'var(--border)',
+                    backgroundColor: loanType === lt ? 'var(--teal)' : 'white',
+                    color: loanType === lt ? 'white' : 'var(--text-muted)',
                   }}
                 >
                   {lt}
@@ -130,17 +130,17 @@ Return ONLY this JSON structure:
           </div>
 
           <div>
-            <label className="text-sm font-medium text-brand-dark block mb-2">Employment</label>
+            <label className="text-sm font-medium block mb-2" style={{ color: 'var(--navy-900)' }}>Employment</label>
             <div className="flex flex-wrap gap-2">
               {EMPLOYMENT.map(emp => (
                 <button
                   key={emp}
                   onClick={() => setEmployment(emp)}
-                  className="text-xs px-3 py-1.5 rounded-full border transition-all"
+                  className="text-xs px-3 py-1.5 rounded-full border transition-all hover:scale-105"
                   style={{
-                    borderColor: employment === emp ? 'var(--brand-purple)' : 'var(--border)',
-                    backgroundColor: employment === emp ? 'var(--brand-purple)' : 'white',
-                    color: employment === emp ? 'white' : 'var(--brand-muted)',
+                    borderColor: employment === emp ? '#9333EA' : 'var(--border)',
+                    backgroundColor: employment === emp ? '#9333EA' : 'white',
+                    color: employment === emp ? 'white' : 'var(--text-muted)',
                   }}
                 >
                   {emp}
@@ -156,8 +156,8 @@ Return ONLY this JSON structure:
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="w-full mt-6 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-50"
-            style={{ backgroundColor: 'var(--brand-teal)' }}
+            className="w-full mt-6 py-3 rounded-xl text-white font-semibold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
+            style={{ backgroundColor: 'var(--teal)' }}
           >
             {loading ? (
               <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Analyzing...</>
@@ -193,7 +193,7 @@ Return ONLY this JSON structure:
           <RejectionCards reasons={result.rejection_reasons} />
           
           <details className="bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <summary className="px-5 py-4 cursor-pointer font-semibold font-heading text-brand-dark">
+            <summary className="px-5 py-4 cursor-pointer font-semibold font-heading" style={{ color: 'var(--navy-900)' }}>
               📅 Your 90-Day Recovery Plan
             </summary>
             <div className="px-5 pb-5">
@@ -202,15 +202,15 @@ Return ONLY this JSON structure:
           </details>
 
           {result.encouragement && (
-            <blockquote className="border-l-4 pl-4 italic text-brand-teal text-sm" style={{ borderLeftColor: 'var(--brand-teal)' }}>
+            <blockquote className="border-l-4 pl-4 italic text-sm py-1" style={{ borderLeftColor: 'var(--teal)', color: 'var(--teal)' }}>
               "{result.encouragement}"
             </blockquote>
           )}
 
           <button
             onClick={() => generateLoanPDF({ cibil, income, loanAmount, loanType }, result.rejection_reasons, result.monthly_plan)}
-            className="w-full py-3 border rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"
-            style={{ borderColor: 'var(--brand-teal)', color: 'var(--brand-teal)' }}
+            className="w-full py-3 border rounded-xl text-sm font-medium hover:bg-teal-50 transition-colors"
+            style={{ borderColor: 'var(--teal)', color: 'var(--teal)' }}
           >
             📥 Download My Loan Plan
           </button>
@@ -223,9 +223,9 @@ Return ONLY this JSON structure:
 function NumberInput({ label, prefix, value, onChange }: { label: string; prefix: string; value: number; onChange: (v: number) => void }) {
   return (
     <div>
-      <label className="text-sm font-medium text-brand-dark block mb-1">{label}</label>
-      <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-brand-teal transition-colors" style={{ '--tw-border-opacity': 1 } as React.CSSProperties}>
-        <span className="px-3 py-2.5 bg-gray-50 text-brand-muted text-sm border-r border-gray-200">{prefix}</span>
+      <label className="text-sm font-medium block mb-1" style={{ color: 'var(--navy-900)' }}>{label}</label>
+      <div className="flex items-center border border-gray-200 rounded-xl overflow-hidden focus-within:border-teal-500 transition-colors" style={{ '--tw-border-opacity': 1 } as React.CSSProperties}>
+        <span className="px-3 py-2.5 bg-gray-50 text-sm border-r border-gray-200 font-medium" style={{ color: 'var(--text-muted)' }}>{prefix}</span>
         <input
           type="number"
           value={value}

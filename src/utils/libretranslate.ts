@@ -4,18 +4,14 @@ export async function translate(
   target: string
 ): Promise<string> {
   if (source === target) return text;
-  if (source === 'en' && target === 'en') return text;
+  if (!text.trim()) return text;
   try {
-    const res = await fetch('http://localhost:5000/translate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ q: text, source, target, format: 'text' }),
-    });
-    if (!res.ok) throw new Error('LibreTranslate unavailable');
+    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${source}&tl=${target}&dt=t&q=${encodeURIComponent(text)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('Translation unavailable');
     const data = await res.json();
-    return data.translatedText as string;
+    return data[0].map((item: any) => item[0]).join('');
   } catch {
-    // Graceful fallback: return original if translation fails
     return text;
   }
 }
