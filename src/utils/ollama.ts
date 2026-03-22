@@ -8,7 +8,7 @@ export async function askOllama(
   prompt: string,
   options: OllamaOptions = {}
 ): Promise<string> {
-  const { model = 'llama3.2:3b', stream = false, timeout = 30000 } = options;
+  const { model = 'llama3:latest', stream = false, timeout = 30000 } = options;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
