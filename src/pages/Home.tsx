@@ -158,6 +158,47 @@ export default function Home() {
               <DishaMascot onSessionReady={() => {}} />
             </motion.div>
 
+            {/* Banking Announcements Ticker */}
+            <motion.div variants={stagger.item} className="mb-4 overflow-hidden rounded-xl border" style={{ borderColor: 'var(--border)', background: 'var(--navy-50)' }}>
+              <div className="flex items-center">
+                <span className="px-3 py-2 text-[10px] font-bold uppercase tracking-wider shrink-0" style={{ background: 'var(--navy-900)', color: 'white' }}>
+                  📢 News
+                </span>
+                <div className="overflow-hidden flex-1">
+                  <div className="animate-marquee whitespace-nowrap py-2 px-3 text-xs" style={{ color: 'var(--navy-800)' }}>
+                    RBI Repo Rate: 6.50% (unchanged) &nbsp;•&nbsp; FD rates revised upward — up to 7.25% for senior citizens &nbsp;•&nbsp; 
+                    UPI transaction limit raised to ₹5 Lakhs for tax payments &nbsp;•&nbsp; New KYC deadline: 31 Mar 2026 &nbsp;•&nbsp; 
+                    PM Mudra Loan: Apply online — up to ₹10 Lakhs collateral-free &nbsp;•&nbsp; 
+                    Digital Rupee (e₹) now available at select branches
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Quick Access Services */}
+            <motion.div variants={stagger.item} className="mb-4">
+              <div className="grid grid-cols-4 gap-2">
+                {[
+                  { icon: '💰', label: 'Account\nBalance', path: '/customer/journey' },
+                  { icon: '💸', label: 'Fund\nTransfer', path: '/customer/transaction' },
+                  { icon: '📊', label: 'FD\nRates', path: '/customer/salary' },
+                  { icon: '📋', label: 'Cheque\nStatus', path: '/customer/journey' },
+                ].map(svc => (
+                  <button
+                    key={svc.label}
+                    onClick={() => navigate(svc.path)}
+                    className="flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border transition-all hover:shadow-md hover:scale-105"
+                    style={{ borderColor: 'var(--border)', background: 'white' }}
+                  >
+                    <span className="text-2xl">{svc.icon}</span>
+                    <span className="text-[10px] font-semibold text-center leading-tight whitespace-pre-line" style={{ color: 'var(--navy-900)' }}>
+                      {svc.label}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </motion.div>
+
             {/* Separator */}
             <motion.div variants={stagger.item} className="mb-4">
               <p style={{ textAlign: 'center', fontSize: '12px', color: '#9FADC8', margin: '0' }}>

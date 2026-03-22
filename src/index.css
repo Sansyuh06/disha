@@ -551,6 +551,14 @@ h4 { font-size: 16px; font-weight: 600; }
 .animate-slide-right  { animation: slideInRight 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 .animate-scale-in     { animation: scaleIn 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
 /* ─── Accessibility Mode ─────────────────────────── */
 .a11y-mode { --a11y-scale: 1.3; }
 

@@ -9,6 +9,8 @@ export interface BereavementAnswers {
   state: string;
   hasDC: string;
   hasNominee: string;
+  balanceRange: string;
+  hasWill: string;
 }
 
 interface BereavementResult {
@@ -30,27 +32,70 @@ interface BereavementResult {
 
 type Phase = 'intro' | 'wizard' | 'loading' | 'results';
 
+const EMERGENCY_CONTACTS = [
+  { label: 'Union Bank Bereavement', number: '1800 22 2244', icon: '📞', note: 'Toll-free, 8am–8pm' },
+  { label: 'Death Certificate Portal', number: 'crsorgi.gov.in', icon: '🌐', note: 'Govt. portal for DC' },
+  { label: 'District Collector Office', number: '011-23381363', icon: '🏛️', note: 'Succession certificate' },
+  { label: 'Legal Aid Helpline', number: '15100', icon: '⚖️', note: 'Free legal advice' },
+];
+
 export default function BereavementCompanion() {
   const [phase, setPhase] = useState<Phase>('intro');
   const [result, setResult] = useState<BereavementResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<BereavementAnswers | null>(null);
 
-  const handleWizardComplete = async (answers: BereavementAnswers) => {
+  const handleWizardComplete = async (ans: BereavementAnswers) => {
     setPhase('loading');
     setError(null);
+    setAnswers(ans);
     try {
+      const balanceContext = ans.balanceRange === 'Under ₹1 Lakh'
+        ? 'Since the balance is under ₹1 Lakh, a simplified claim process (letter of indemnity + surety bond) applies — no succession certificate needed.'
+        : ans.balanceRange === 'Above ₹5 Lakhs'
+        ? 'Since the balance exceeds ₹5 Lakhs, a succession certificate or probate from the court is typically required.'
+        : 'For balances between ₹1–5 Lakhs, the bank may require an indemnity bond with sureties.';
+
+      const willContext = ans.hasWill === 'Yes, there is a registered will'
+        ? 'A registered will exists, so probate proceedings may expedite the claim.'
+        : ans.hasWill === 'No will exists'
+        ? 'No will exists, so intestate succession laws of the state apply.'
+        : '';
+
       const data = await askOllamaJSON<BereavementResult>(
-        `A ${answers.relationship} needs compassionate guidance to access a deceased person's ${answers.accountTypes.join(', ')} in ${answers.state}, India. Death certificate: ${answers.hasDC}. Nominee: ${answers.hasNominee}.
-Create a practical, step-by-step guide. Be warm, clear, and never use legal jargon without plain English explanation. Return ONLY this JSON:
+        `You are an expert Indian banking advisor helping a bereaved family member.
+
+A ${ans.relationship} needs compassionate guidance to access a deceased person's bank accounts in ${ans.state}, India.
+
+CONTEXT:
+- Account types: ${ans.accountTypes.join(', ')}
+- Death certificate status: ${ans.hasDC}
+- Nominee status: ${ans.hasNominee}
+- ${balanceContext}
+- ${willContext}
+
+Generate a detailed, compassionate, step-by-step guide. Be warm and clear. Use plain English explanations for legal terms.
+
+Return ONLY this JSON (4-6 steps):
 {
-  "intro_message": "Warm 1-sentence acknowledgment",
-  "steps": [{"step_number":1,"title":"Gather Your Documents","description":"Clear 2-3 sentences explaining this step","documents_needed":["Death Certificate — original + 2 self-attested photocopies","Your Aadhaar Card"],"counter":"Counter 2 — Documentation","time_estimate":"20-30 minutes","important_note":"Staff are trained to handle this sensitively."}],
-  "legal_summary": "2 sentences on this relationship legal entitlements",
-  "timeline_total": "Typically 2-4 weeks for complete resolution",
-  "helpline": "Union Bank Bereavement Support: 1800 22 2244 (toll-free, 8am-8pm)",
+  "intro_message": "One warm, empathetic sentence acknowledging their loss",
+  "steps": [
+    {
+      "step_number": 1,
+      "title": "Step title",
+      "description": "Clear 2-3 sentence explanation",
+      "documents_needed": ["Document — with specific details like 'Original + 2 photocopies'"],
+      "counter": "Counter name at bank",
+      "time_estimate": "estimated time",
+      "important_note": "Helpful tip"
+    }
+  ],
+  "legal_summary": "2-3 sentences on legal entitlements for this relationship under Indian succession law",
+  "timeline_total": "Realistic total timeline",
+  "helpline": "Union Bank Bereavement Helpline: 1800 22 2244 (toll-free, 8am-8pm)",
   "closing_message": "One gentle closing sentence"
 }`,
-        { timeout: 35000 }
+        { timeout: 45000 }
       );
       setResult(data);
       setPhase('results');
@@ -77,7 +122,7 @@ Create a practical, step-by-step guide. Be warm, clear, and never use legal jarg
         </>
       )}
       {phase === 'results' && result && (
-        <ActionChecklist result={result} />
+        <ActionChecklist result={result} answers={answers} />
       )}
     </div>
   );
@@ -104,7 +149,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
         <div className="relative z-10 text-5xl">🤍</div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-blue-100 p-8 text-center max-w-sm shadow-sm">
+      <div className="bg-white rounded-2xl border border-blue-100 p-8 text-center max-w-sm shadow-sm mb-6">
         <h2 className="font-heading text-xl font-semibold text-blue-900 mb-3">We are sorry for your loss.</h2>
         <p className="text-blue-700 text-sm leading-relaxed mb-2">
           We are here to help you navigate this gently, at your own pace.
@@ -117,6 +162,26 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
         >
           I'm ready to begin
         </button>
+      </div>
+
+      {/* Emergency Contacts */}
+      <div className="w-full max-w-sm">
+        <h4 className="text-xs font-semibold text-blue-400 uppercase tracking-wider mb-3 text-center">Emergency Contacts</h4>
+        <div className="grid grid-cols-2 gap-2">
+          {EMERGENCY_CONTACTS.map(c => (
+            <a
+              key={c.label}
+              href={c.number.includes('.') ? `https://${c.number}` : `tel:${c.number.replace(/\s/g, '')}`}
+              target={c.number.includes('.') ? '_blank' : undefined}
+              rel="noopener noreferrer"
+              className="bg-white border border-blue-100 rounded-xl p-3 text-center hover:shadow-md transition-all hover:border-blue-300 block"
+            >
+              <div className="text-xl mb-1">{c.icon}</div>
+              <p className="text-xs font-semibold text-blue-800 leading-tight">{c.label}</p>
+              <p className="text-[10px] text-blue-500 mt-0.5">{c.note}</p>
+            </a>
+          ))}
+        </div>
       </div>
     </div>
   );

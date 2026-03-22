@@ -40,6 +40,29 @@ export default function DocumentScanner() {
         <p className="text-[var(--text-muted)] text-sm">We'll fill in your details automatically</p>
       </div>
 
+      {/* Supported Document Types */}
+      <div className="grid grid-cols-4 gap-2 mb-4">
+        {[
+          { icon: '🪪', label: 'Aadhaar Card' },
+          { icon: '💳', label: 'PAN Card' },
+          { icon: '🛂', label: 'Passport' },
+          { icon: '📄', label: 'Salary Slip' },
+        ].map(d => (
+          <div key={d.label} className="flex flex-col items-center gap-1 py-2 px-1 rounded-xl bg-gray-50 border border-gray-100">
+            <span className="text-xl">{d.icon}</span>
+            <span className="text-[10px] font-medium text-center" style={{ color: 'var(--navy-900)' }}>{d.label}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Scanning Tips */}
+      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 mb-5 flex items-start gap-2">
+        <span className="text-lg">💡</span>
+        <div className="text-xs leading-relaxed" style={{ color: '#92400E' }}>
+          <strong>For best results:</strong> Place document on a flat surface · Ensure good lighting with no glare · Keep all corners visible · Use a clear, high-resolution image
+        </div>
+      </div>
+
       {/* Tabs — Upload is primary (reviewer fix) */}
       {!ocrDone && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">

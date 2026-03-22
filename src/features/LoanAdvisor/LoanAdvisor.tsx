@@ -166,6 +166,54 @@ Return ONLY this JSON structure:
         </div>
       </div>
 
+      {/* EMI Calculator */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm mb-6">
+        <h3 className="font-heading font-semibold text-lg mb-4" style={{ color: 'var(--navy-900)' }}>
+          📊 EMI Calculator
+        </h3>
+        <EMICalculator loanAmount={loanAmount} loanType={loanType} />
+      </div>
+
+      {/* Loan Product Comparison */}
+      <div className="mb-6">
+        <h3 className="font-heading font-semibold text-lg mb-4" style={{ color: 'var(--navy-900)' }}>
+          🏦 Compare Loan Products
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          {LOAN_PRODUCTS.map(p => (
+            <div
+              key={p.name}
+              className="bg-white rounded-2xl border p-4 shadow-sm hover:shadow-md transition-all"
+              style={{ borderColor: loanType === p.type ? 'var(--teal)' : '#E2E8F0' }}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-xl">{p.icon}</span>
+                <h4 className="font-heading font-semibold text-sm" style={{ color: 'var(--navy-900)' }}>{p.name}</h4>
+              </div>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-muted)' }}>Interest Rate</span>
+                  <span className="font-semibold" style={{ color: 'var(--teal)' }}>{p.rate}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-muted)' }}>Max Tenure</span>
+                  <span className="font-medium" style={{ color: 'var(--navy-900)' }}>{p.tenure}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-muted)' }}>Max Amount</span>
+                  <span className="font-medium" style={{ color: 'var(--navy-900)' }}>{p.maxAmount}</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span style={{ color: 'var(--text-muted)' }}>Processing Fee</span>
+                  <span className="font-medium" style={{ color: 'var(--navy-900)' }}>{p.processingFee}</span>
+                </div>
+              </div>
+              <p className="text-[10px] mt-2 leading-relaxed" style={{ color: 'var(--text-muted)' }}>{p.eligibility}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Error */}
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-5 text-sm text-red-700">
@@ -236,3 +284,84 @@ function NumberInput({ label, prefix, value, onChange }: { label: string; prefix
     </div>
   );
 }
+
+const LOAN_PRODUCTS = [
+  { name: 'Home Loan', type: 'Home Loan', icon: '🏠', rate: '8.40% – 9.65%', tenure: '30 years', maxAmount: '₹5 Crore', processingFee: '0.50%', eligibility: 'Min CIBIL 700, 3 yrs employment, DTI < 50%' },
+  { name: 'Personal Loan', type: 'Personal Loan', icon: '💳', rate: '10.49% – 18.00%', tenure: '5 years', maxAmount: '₹25 Lakhs', processingFee: '1.50%', eligibility: 'Min CIBIL 650, 1 yr employment, income > ₹25K/mo' },
+  { name: 'Education Loan', type: 'Education Loan', icon: '🎓', rate: '8.15% – 11.50%', tenure: '15 years', maxAmount: '₹1.5 Crore', processingFee: 'Nil', eligibility: 'Admission letter required, co-applicant for > ₹4L' },
+  { name: 'Vehicle Loan', type: 'Vehicle Loan', icon: '🚗', rate: '8.70% – 12.50%', tenure: '7 years', maxAmount: '₹1 Crore', processingFee: '1.00%', eligibility: 'Min CIBIL 650, new car only, 85% on-road price' },
+  { name: 'Gold Loan', type: 'Business Loan', icon: '✨', rate: '7.30% – 9.50%', tenure: '3 years', maxAmount: '₹50 Lakhs', processingFee: '0.25%', eligibility: 'Gold purity 18K+, 75% of gold value, instant disbursement' },
+  { name: 'MSME Loan', type: 'Business Loan', icon: '🏭', rate: '9.25% – 14.00%', tenure: '10 years', maxAmount: '₹2 Crore', processingFee: '1.00%', eligibility: 'Udyam registration, 2 yrs business vintage, IT returns' },
+];
+
+function EMICalculator({ loanAmount, loanType }: { loanAmount: number; loanType: string }) {
+  const defaultRate = loanType === 'Home Loan' ? 8.5 : loanType === 'Education Loan' ? 8.5 : loanType === 'Personal Loan' ? 12 : loanType === 'Vehicle Loan' ? 9 : 10;
+  const defaultTenure = loanType === 'Home Loan' ? 20 : loanType === 'Education Loan' ? 10 : loanType === 'Personal Loan' ? 3 : 5;
+  
+  const [rate, setRate] = React.useState(defaultRate);
+  const [tenure, setTenure] = React.useState(defaultTenure);
+
+  // EMI formula: P × r × (1+r)^n / ((1+r)^n - 1)
+  const r = rate / 12 / 100;
+  const n = tenure * 12;
+  const emi = r > 0 && n > 0 ? (loanAmount * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1) : 0;
+  const totalPayment = emi * n;
+  const totalInterest = totalPayment - loanAmount;
+  const interestPct = totalPayment > 0 ? (totalInterest / totalPayment) * 100 : 0;
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="flex justify-between text-xs mb-1">
+            <span style={{ color: 'var(--text-muted)' }}>Interest Rate</span>
+            <span className="font-bold" style={{ color: 'var(--teal)' }}>{rate.toFixed(1)}%</span>
+          </div>
+          <input type="range" min={5} max={20} step={0.1} value={rate} onChange={e => setRate(Number(e.target.value))} className="w-full" style={{ accentColor: 'var(--teal)' }} />
+          <div className="flex justify-between text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            <span>5%</span><span>20%</span>
+          </div>
+        </div>
+        <div>
+          <div className="flex justify-between text-xs mb-1">
+            <span style={{ color: 'var(--text-muted)' }}>Tenure</span>
+            <span className="font-bold" style={{ color: 'var(--teal)' }}>{tenure} years</span>
+          </div>
+          <input type="range" min={1} max={30} step={1} value={tenure} onChange={e => setTenure(Number(e.target.value))} className="w-full" style={{ accentColor: 'var(--teal)' }} />
+          <div className="flex justify-between text-[10px]" style={{ color: 'var(--text-muted)' }}>
+            <span>1 yr</span><span>30 yrs</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Results */}
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-xl p-3 text-center border border-teal-100">
+          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: 'var(--teal)' }}>Monthly EMI</p>
+          <p className="font-heading font-bold text-lg" style={{ color: 'var(--navy-900)' }}>₹{Math.round(emi).toLocaleString('en-IN')}</p>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: 'var(--text-muted)' }}>Total Interest</p>
+          <p className="font-heading font-bold text-lg text-amber-600">₹{Math.round(totalInterest).toLocaleString('en-IN')}</p>
+        </div>
+        <div className="bg-gray-50 rounded-xl p-3 text-center border border-gray-100">
+          <p className="text-[10px] uppercase tracking-wider font-semibold" style={{ color: 'var(--text-muted)' }}>Total Payment</p>
+          <p className="font-heading font-bold text-lg" style={{ color: 'var(--navy-900)' }}>₹{Math.round(totalPayment).toLocaleString('en-IN')}</p>
+        </div>
+      </div>
+
+      {/* Visual breakdown bar */}
+      <div>
+        <div className="flex h-3 rounded-full overflow-hidden">
+          <div className="bg-teal-500 transition-all" style={{ width: `${100 - interestPct}%` }} />
+          <div className="bg-amber-400 transition-all" style={{ width: `${interestPct}%` }} />
+        </div>
+        <div className="flex justify-between text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>
+          <span>🟢 Principal: ₹{loanAmount.toLocaleString('en-IN')}</span>
+          <span>🟡 Interest: ₹{Math.round(totalInterest).toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+

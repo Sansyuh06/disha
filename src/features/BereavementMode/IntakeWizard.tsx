@@ -9,6 +9,18 @@ const INDIAN_STATES = [
   'Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh','Puducherry',
 ];
 
+const ACCOUNT_TYPES = [
+  { label: 'Savings Account', icon: '🏦' },
+  { label: 'Fixed Deposit', icon: '📊' },
+  { label: 'Home Loan', icon: '🏠' },
+  { label: 'Locker', icon: '🔐' },
+  { label: 'PPF Account', icon: '📈' },
+  { label: 'Insurance Policy', icon: '🛡️' },
+  { label: 'Mutual Funds', icon: '💹' },
+  { label: 'Pension Account', icon: '👴' },
+  { label: 'Unknown', icon: '❓' },
+];
+
 interface Props {
   onComplete: (answers: BereavementAnswers) => void;
   loading: boolean;
@@ -21,15 +33,17 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
   const [state, setState] = useState('');
   const [hasDC, setHasDC] = useState('');
   const [hasNominee, setHasNominee] = useState('');
+  const [balanceRange, setBalanceRange] = useState('');
+  const [hasWill, setHasWill] = useState('');
 
-  const totalSteps = 5;
+  const totalSteps = 7;
   const progress = (step / totalSteps) * 100;
 
   const goNext = () => setStep(s => s + 1);
   const goBack = () => setStep(s => Math.max(0, s - 1));
 
   const submit = () => {
-    onComplete({ relationship, accountTypes, state, hasDC, hasNominee });
+    onComplete({ relationship, accountTypes, state, hasDC, hasNominee, balanceRange, hasWill });
   };
 
   const toggleAccount = (type: string) => {
@@ -58,7 +72,7 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
       {/* Step 0: Relationship */}
       {step === 0 && (
         <WizardCard title="What is your relationship to the account holder?">
-          {['Spouse', 'Child', 'Parent', 'Sibling', 'Other'].map(r => (
+          {['Spouse', 'Son / Daughter', 'Parent', 'Sibling', 'Legal Guardian', 'Other'].map(r => (
             <OptionButton
               key={r}
               label={r}
@@ -72,15 +86,25 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
 
       {/* Step 1: Account types */}
       {step === 1 && (
-        <WizardCard title="Do you know what accounts they held?" multi>
-          {['Savings Account', 'Fixed Deposit', 'Home Loan', 'Locker', 'Unknown'].map(type => (
-            <OptionButton
-              key={type}
-              label={type}
-              selected={accountTypes.includes(type)}
-              onClick={() => toggleAccount(type)}
-            />
-          ))}
+        <WizardCard title="Which accounts or products did they hold?" multi>
+          <div className="grid grid-cols-3 gap-2">
+            {ACCOUNT_TYPES.map(type => (
+              <button
+                key={type.label}
+                onClick={() => toggleAccount(type.label)}
+                className="flex flex-col items-center gap-1 px-3 py-3 rounded-xl border-2 text-center transition-all"
+                style={{
+                  borderColor: accountTypes.includes(type.label) ? '#3B82F6' : '#BFDBFE',
+                  backgroundColor: accountTypes.includes(type.label) ? '#EFF6FF' : 'white',
+                }}
+              >
+                <span className="text-2xl">{type.icon}</span>
+                <span className="text-[11px] font-medium leading-tight" style={{ color: accountTypes.includes(type.label) ? '#1D4ED8' : '#1E40AF' }}>
+                  {type.label}
+                </span>
+              </button>
+            ))}
+          </div>
           <div className="flex gap-3 mt-4">
             <BackButton onClick={goBack} />
             <button
@@ -95,8 +119,36 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
         </WizardCard>
       )}
 
-      {/* Step 2: State */}
+      {/* Step 2: Balance range */}
       {step === 2 && (
+        <WizardCard title="What is the approximate total balance across accounts?">
+          <p className="text-xs text-blue-500 text-center mb-3">This determines the legal process required</p>
+          {[
+            { label: 'Under ₹1 Lakh', desc: 'Simplified claim process' },
+            { label: '₹1 Lakh – ₹5 Lakhs', desc: 'Indemnity bond with sureties' },
+            { label: 'Above ₹5 Lakhs', desc: 'Succession certificate required' },
+            { label: 'I don\'t know', desc: 'We\'ll guide you to find out' },
+          ].map(opt => (
+            <button
+              key={opt.label}
+              onClick={() => { setBalanceRange(opt.label); setTimeout(goNext, 300); }}
+              className="w-full text-left px-5 py-4 rounded-xl border-2 text-sm font-medium transition-all"
+              style={{
+                borderColor: balanceRange === opt.label ? '#3B82F6' : '#BFDBFE',
+                backgroundColor: balanceRange === opt.label ? '#EFF6FF' : 'white',
+                color: balanceRange === opt.label ? '#1D4ED8' : '#1E40AF',
+              }}
+            >
+              <div className="font-semibold">{opt.label}</div>
+              <div className="text-xs mt-0.5" style={{ color: '#64748B' }}>{opt.desc}</div>
+            </button>
+          ))}
+          <BackButton onClick={goBack} />
+        </WizardCard>
+      )}
+
+      {/* Step 3: State */}
+      {step === 3 && (
         <WizardCard title="Which state did they bank in?">
           <select
             value={state}
@@ -120,8 +172,8 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
         </WizardCard>
       )}
 
-      {/* Step 3: Death certificate */}
-      {step === 3 && (
+      {/* Step 4: Death certificate */}
+      {step === 4 && (
         <WizardCard title="Do you have the death certificate?">
           {[
             'Yes, I have it',
@@ -139,8 +191,8 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
         </WizardCard>
       )}
 
-      {/* Step 4: Nominee */}
-      {step === 4 && (
+      {/* Step 5: Nominee */}
+      {step === 5 && (
         <WizardCard title="Was a nominee registered on the account?">
           {[
             'Yes, nominee is registered',
@@ -151,7 +203,28 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
               key={opt}
               label={opt}
               selected={hasNominee === opt}
-              onClick={() => { setHasNominee(opt); setTimeout(() => setStep(5), 300); }}
+              onClick={() => { setHasNominee(opt); setTimeout(goNext, 300); }}
+            />
+          ))}
+          <BackButton onClick={goBack} />
+        </WizardCard>
+      )}
+
+      {/* Step 6: Will */}
+      {step === 6 && (
+        <WizardCard title="Is there a will or family settlement?">
+          <p className="text-xs text-blue-500 text-center mb-3">This affects how the estate is distributed</p>
+          {[
+            'Yes, there is a registered will',
+            'There is an unregistered will',
+            'No will exists',
+            'I\'m not sure',
+          ].map(opt => (
+            <OptionButton
+              key={opt}
+              label={opt}
+              selected={hasWill === opt}
+              onClick={() => { setHasWill(opt); setTimeout(() => setStep(7), 300); }}
             />
           ))}
           <BackButton onClick={goBack} />
@@ -159,14 +232,16 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
       )}
 
       {/* Summary */}
-      {step === 5 && (
+      {step === 7 && (
         <WizardCard title="Here is what we know:">
           <div className="space-y-2 mb-5 text-sm text-blue-800">
             <p>👤 Relationship: <strong>{relationship}</strong></p>
             <p>🏦 Accounts: <strong>{accountTypes.join(', ')}</strong></p>
+            <p>💰 Balance range: <strong>{balanceRange}</strong></p>
             <p>📍 State: <strong>{state}</strong></p>
             <p>📋 Death certificate: <strong>{hasDC}</strong></p>
             <p>✅ Nominee: <strong>{hasNominee}</strong></p>
+            <p>📜 Will: <strong>{hasWill}</strong></p>
           </div>
           <button
             onClick={submit}
@@ -175,7 +250,7 @@ export default function IntakeWizard({ onComplete, loading }: Props) {
             style={{ backgroundColor: '#3B82F6' }}
           >
             {loading ? (
-              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Generating your guide...</>
+              <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Generating your personalized guide...</>
             ) : 'Generate My Step-by-Step Guide →'}
           </button>
           <BackButton onClick={goBack} />
