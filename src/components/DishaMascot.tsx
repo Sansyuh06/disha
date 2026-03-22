@@ -33,9 +33,6 @@ export default function DishaMascot({ onSessionReady }: Props) {
 
   useEffect(() => {
     checkVitaStatus().then(setVitaReady);
-    setTimeout(() => {
-      speakWithVita("Hello! I am DISHA. Tell me how I can help you today.", { voice: 'af_heart' });
-    }, 800);
   }, []);
 
   const addStep = (s: string) => setStepsLog(prev => [...prev, s]);
@@ -136,69 +133,60 @@ export default function DishaMascot({ onSessionReady }: Props) {
   }[phase];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', padding: '24px', maxWidth: '480px', margin: '0 auto' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', padding: '16px 0', maxWidth: '420px', margin: '0 auto' }}>
 
-      {/* Mascot Avatar */}
-      <div style={{ position: 'relative', width: '100px', height: '100px' }}>
-        {(phase === 'thinking' || phase === 'acting') && [1, 2, 3].map(i => (
-          <div key={i} style={{
-            position: 'absolute', inset: -i * 10, borderRadius: '50%',
-            border: `2px solid ${ringColor}`,
-            opacity: 0.5 / i,
-            animation: `sonar ${1.4 + i * 0.3}s ease-out infinite`,
-            animationDelay: `${i * 0.2}s`,
+      {/* Row: Avatar + Speech bubble */}
+      <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', width: '100%' }}>
+        {/* Compact Mascot Avatar */}
+        <div style={{ position: 'relative', width: '52px', height: '52px', flexShrink: 0 }}>
+          <div style={{
+            width: '52px', height: '52px', borderRadius: '50%',
+            background: phase === 'idle' ? 'linear-gradient(135deg, #0D1B3E, #1B3A8E)' : `linear-gradient(135deg, ${ringColor}22, ${ringColor}55)`,
+            border: `2.5px solid ${ringColor}`,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            transition: 'all 0.4s ease',
+            boxShadow: `0 0 12px ${ringColor}33`,
+          }}>
+            <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+              <rect x="10" y="9" width="3.5" height="22" rx="1.75" fill="white" />
+              <path d="M13.5 9 Q30 9 30 20 Q30 31 13.5 31" stroke="white" strokeWidth="3.5" fill="none" strokeLinecap="round" />
+              <line x1="15" y1="27" x2="26" y2="14" stroke="#0ABFA3" strokeWidth="3" strokeLinecap="round" />
+              <path d="M26 14 L21 14 M26 14 L26 19" stroke="#0ABFA3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+          <div style={{
+            position: 'absolute', bottom: '0px', right: '0px',
+            width: '12px', height: '12px', borderRadius: '50%',
+            background: phase === 'done' ? '#16A34A' : phase === 'error' ? '#DC2626' : ringColor,
+            border: '2px solid white', transition: 'background 0.3s',
           }} />
-        ))}
-        <div style={{
-          width: '100px', height: '100px', borderRadius: '50%',
-          background: phase === 'idle' ? 'linear-gradient(135deg, #0D1B3E, #1B3A8E)' : `linear-gradient(135deg, ${ringColor}22, ${ringColor}55)`,
-          border: `3px solid ${ringColor}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'all 0.4s ease',
-          boxShadow: `0 0 20px ${ringColor}44`,
-        }}>
-          <svg width="52" height="52" viewBox="0 0 40 40" fill="none">
-            <rect x="0" y="0" width="40" height="40" rx="10" fill={phase === 'idle' ? '#0D1B3E' : `${ringColor}33`} />
-            <rect x="10" y="9" width="3.5" height="22" rx="1.75" fill="white" />
-            <path d="M13.5 9 Q30 9 30 20 Q30 31 13.5 31" stroke="white" strokeWidth="3.5" fill="none" strokeLinecap="round" />
-            <line x1="15" y1="27" x2="26" y2="14" stroke="#0ABFA3" strokeWidth="3" strokeLinecap="round" />
-            <path d="M26 14 L21 14 M26 14 L26 19" stroke="#0ABFA3" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
         </div>
-        <div style={{
-          position: 'absolute', bottom: '4px', right: '4px',
-          width: '16px', height: '16px', borderRadius: '50%',
-          background: phase === 'done' ? '#16A34A' : phase === 'error' ? '#DC2626' : ringColor,
-          border: '2px solid white', transition: 'background 0.3s',
-        }} />
-      </div>
 
-      {/* Speech bubble */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={mascotText}
-          initial={{ opacity: 0, y: 8, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25 }}
-          style={{
-            background: 'white', border: '1px solid #DDE4F5',
-            borderRadius: '14px 14px 14px 4px',
-            padding: '14px 18px', maxWidth: '360px',
-            fontSize: '14px', lineHeight: 1.6, color: '#0D1B3E',
-            boxShadow: '0 2px 12px rgba(13,27,62,0.08)',
-            position: 'relative',
-          }}
-        >
-          <div style={{ position: 'absolute', top: '-8px', left: '20px', width: 0, height: 0, borderLeft: '8px solid transparent', borderRight: '8px solid transparent', borderBottom: '8px solid white' }} />
-          {mascotText}
-          {vitaReady && (
-            <span style={{ marginLeft: '8px', fontSize: '10px', padding: '1px 7px', borderRadius: '20px', background: '#E0F7F3', color: '#089B84', fontWeight: 600 }}>
-              Kokoro voice
-            </span>
-          )}
-        </motion.div>
-      </AnimatePresence>
+        {/* Speech bubble */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mascotText}
+            initial={{ opacity: 0, y: 4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ duration: 0.2 }}
+            style={{
+              flex: 1, background: 'white', border: '1px solid #DDE4F5',
+              borderRadius: '12px 12px 12px 4px',
+              padding: '10px 14px',
+              fontSize: '13px', lineHeight: 1.5, color: '#0D1B3E',
+              boxShadow: '0 1px 8px rgba(13,27,62,0.06)',
+            }}
+          >
+            {mascotText}
+            {vitaReady && (
+              <span style={{ marginLeft: '6px', fontSize: '9px', padding: '1px 6px', borderRadius: '20px', background: '#E0F7F3', color: '#089B84', fontWeight: 600 }}>
+                Kokoro
+              </span>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
       {/* Steps log */}
       <AnimatePresence>
@@ -207,11 +195,11 @@ export default function DishaMascot({ onSessionReady }: Props) {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            style={{ width: '100%', background: '#F2F5FC', borderRadius: '12px', padding: '12px 16px', border: '1px solid #DDE4F5' }}
+            style={{ width: '100%', background: '#F2F5FC', borderRadius: '10px', padding: '10px 14px', border: '1px solid #DDE4F5' }}
           >
             {stepsLog.map((s, i) => (
-              <div key={i} style={{ display: 'flex', gap: '8px', alignItems: 'center', fontSize: '12px', color: '#3D4F7C', padding: '3px 0' }}>
-                <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#0ABFA3', flexShrink: 0 }} />
+              <div key={i} style={{ display: 'flex', gap: '6px', alignItems: 'center', fontSize: '11px', color: '#3D4F7C', padding: '2px 0' }}>
+                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0ABFA3', flexShrink: 0 }} />
                 {s}
               </div>
             ))}
@@ -223,22 +211,22 @@ export default function DishaMascot({ onSessionReady }: Props) {
       <AnimatePresence>
         {(phase === 'idle' || phase === 'error') && (
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}
+            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}
           >
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+            <div style={{ display: 'flex', gap: '6px', alignItems: 'flex-end' }}>
               <textarea
                 ref={inputRef}
                 value={userText}
                 onChange={e => setUserText(e.target.value)}
                 onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSubmit(); } }}
                 placeholder="Tell me what you need... (e.g. I want to close my father's FD)"
-                rows={2}
+                rows={1}
                 style={{
-                  flex: 1, border: '1.5px solid #DDE4F5', borderRadius: '12px',
-                  padding: '12px 14px', fontSize: '14px', fontFamily: 'DM Sans, sans-serif',
-                  resize: 'none', outline: 'none', lineHeight: 1.5,
+                  flex: 1, border: '1.5px solid #DDE4F5', borderRadius: '10px',
+                  padding: '10px 12px', fontSize: '13px', fontFamily: 'DM Sans, sans-serif',
+                  resize: 'none', outline: 'none', lineHeight: 1.4,
                 }}
                 onFocus={e => (e.target.style.borderColor = '#0ABFA3')}
                 onBlur={e => (e.target.style.borderColor = '#DDE4F5')}
@@ -246,14 +234,14 @@ export default function DishaMascot({ onSessionReady }: Props) {
               <button
                 onClick={handleMic}
                 style={{
-                  width: '46px', height: '46px', borderRadius: '12px', flexShrink: 0,
+                  width: '40px', height: '40px', borderRadius: '10px', flexShrink: 0,
                   border: `2px solid ${micActive ? '#22C55E' : '#DDE4F5'}`,
                   background: micActive ? '#F0FDF4' : 'white', cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   color: micActive ? '#16A34A' : '#6B7A99',
                 }}
               >
-                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                 </svg>
               </button>
@@ -263,16 +251,16 @@ export default function DishaMascot({ onSessionReady }: Props) {
               onClick={handleSubmit}
               disabled={!userText.trim()}
               style={{
-                width: '100%', height: '48px', borderRadius: '12px',
+                width: '100%', height: '42px', borderRadius: '10px',
                 background: userText.trim() ? 'linear-gradient(135deg, #0D1B3E, #1B3A8E)' : '#DDE4F5',
                 color: userText.trim() ? 'white' : '#9FADC8', border: 'none',
-                fontSize: '15px', fontWeight: 700, cursor: userText.trim() ? 'pointer' : 'not-allowed',
+                fontSize: '14px', fontWeight: 700, cursor: userText.trim() ? 'pointer' : 'not-allowed',
                 fontFamily: 'Plus Jakarta Sans, sans-serif',
                 transition: 'all 0.2s',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
               }}
             >
-              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
               Let DISHA help me
@@ -280,12 +268,7 @@ export default function DishaMascot({ onSessionReady }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Name badge */}
-      <div style={{ textAlign: 'center', marginTop: '-10px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 700, color: '#0ABFA3', textTransform: 'uppercase', letterSpacing: '0.1em' }}>DISHA</p>
-        <p style={{ fontSize: '10px', color: '#9FADC8' }}>AI Banking Assistant</p>
-      </div>
     </div>
   );
 }
+
