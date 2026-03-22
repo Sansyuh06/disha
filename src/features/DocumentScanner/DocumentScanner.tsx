@@ -63,16 +63,6 @@ export default function DocumentScanner() {
               <UploadTab 
                 onFileSelect={handleFileSelect} 
                 previewUrl={previewUrl} 
-                onLoadSample={() => {
-                  setExtractedData({
-                    id_type: 'Aadhaar',
-                    id_number: '**** **** 1234',
-                    full_name: 'Rajesh Kumar',
-                    dob: '01/01/1985',
-                    address: 'Flat 402, Sunshine Apts, MG Road, Bangalore 560001'
-                  });
-                  setOcrDone(true);
-                }}
               />
             ) : (
               <CameraCapture onCapture={handleCapture} previewUrl={previewUrl} />
@@ -81,7 +71,7 @@ export default function DocumentScanner() {
             {imageData && !ocrDone && (
               <OCRProcessor
                 imageData={imageData}
-                onComplete={(data) => { setExtractedData(data); setOcrDone(true); }}
+                onComplete={(data: any) => { setExtractedData(data); setOcrDone(true); }}
               />
             )}
           </div>
@@ -96,7 +86,7 @@ export default function DocumentScanner() {
   );
 }
 
-function UploadTab({ onFileSelect, previewUrl, onLoadSample }: { onFileSelect: (f: File) => void; previewUrl: string | null; onLoadSample: () => void }) {
+function UploadTab({ onFileSelect, previewUrl }: { onFileSelect: (f: File) => void; previewUrl: string | null; }) {
   const [dragging, setDragging] = useState(false);
 
   return (
@@ -131,17 +121,7 @@ function UploadTab({ onFileSelect, previewUrl, onLoadSample }: { onFileSelect: (
         )}
       </label>
 
-      {/* Demo tip */}
-      <div className="mt-4 text-center pb-2">
-        <p className="text-xs mb-2" style={{ color: 'var(--text-muted)' }}>💡 For demo: Skip OCR wait by loading a sample Aadhaar instantly</p>
-        <button 
-          onClick={onLoadSample}
-          className="text-xs font-semibold px-4 py-2 rounded-lg border bg-gray-50 hover:bg-gray-100 transition-colors"
-          style={{ color: 'var(--navy-900)', borderColor: 'var(--border)' }}
-        >
-          ⚡ Load Sample Aadhaar
-        </button>
-      </div>
+
     </div>
   );
 }

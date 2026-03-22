@@ -13,7 +13,7 @@ import BereavementCompanion from './features/BereavementMode/BereavementCompanio
 import BankerDashboard from './features/BankerView/BankerDashboard';
 import PreVisitAssistant from './features/PreVisit/PreVisitAssistant';
 import TransactionOutput from './features/TransactionOutput/TransactionOutput';
-import DemoTour from './components/DemoTour';
+
 import FeatureErrorBoundary from './components/FeatureErrorBoundary';
 
 export default function App() {
@@ -86,8 +86,7 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
 
-      {/* Demo Tour overlay — shown when ?demo=true */}
-      <DemoTour />
+
     </>
   );
 }

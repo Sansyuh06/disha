@@ -227,21 +227,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Demo tour */}
-            <motion.div variants={stagger.item} className="text-center mt-6">
-              <button
-                onClick={() => navigate('/?demo=true')}
-                className="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg border transition-all hover:shadow-sm"
-                style={{
-                  borderColor: 'var(--border)',
-                  color: 'var(--navy-800)',
-                  background: 'var(--navy-50)',
-                }}
-              >
-                <StarSVG />
-                Start Demo Tour — Meet Kamala
-              </button>
-            </motion.div>
+
           </motion.div>
         </div>
 
