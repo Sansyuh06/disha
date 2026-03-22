@@ -36,22 +36,57 @@ export async function askOllamaJSON<T>(
   options: OllamaOptions = {}
 ): Promise<T> {
   const raw = await askOllama(prompt, options);
-  // REVIEWER FIX: regex-based extraction handles markdown fences + preamble text
+  // Extract the JSON block from markdown fences / preamble text
   const match = raw.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
   if (!match) {
     throw new Error('AI returned unexpected format. Please try rephrasing your request.');
   }
+
+  let jsonStr = match[0];
+
+  // Try parsing as-is first
   try {
-    return JSON.parse(match[0]) as T;
+    return JSON.parse(jsonStr) as T;
   } catch {
-    // Second attempt: try to find the largest JSON block
-    const start = raw.lastIndexOf('{') !== -1 ? raw.indexOf('{') : raw.indexOf('[');
-    const end = Math.max(raw.lastIndexOf('}'), raw.lastIndexOf(']'));
-    if (start === -1 || end === -1) {
-      throw new Error('AI returned unexpected format. Please try rephrasing your request.');
+    // Sanitize common Ollama JSON issues:
+    jsonStr = sanitizeJSON(jsonStr);
+    try {
+      return JSON.parse(jsonStr) as T;
+    } catch {
+      // Last resort: try from outermost braces
+      const start = raw.indexOf('{') !== -1 ? raw.indexOf('{') : raw.indexOf('[');
+      const end = Math.max(raw.lastIndexOf('}'), raw.lastIndexOf(']'));
+      if (start === -1 || end === -1) {
+        throw new Error('AI returned unexpected format. Please try rephrasing your request.');
+      }
+      return JSON.parse(sanitizeJSON(raw.slice(start, end + 1))) as T;
     }
-    return JSON.parse(raw.slice(start, end + 1)) as T;
   }
+}
+
+/**
+ * Sanitize messy LLM-generated JSON:
+ * - Replace single-quoted strings with double-quoted
+ * - Remove trailing commas before } or ]
+ * - Strip control characters inside strings
+ */
+function sanitizeJSON(str: string): string {
+  // Replace single-quoted strings with double-quoted
+  // Handles: 'value' → "value" and key: 'value' patterns
+  let result = str.replace(/'/g, '"');
+
+  // Remove trailing commas before } or ]
+  result = result.replace(/,\s*([}\]])/g, '$1');
+
+  // Remove any control characters except \n \r \t
+  result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
+
+  // Replace literal newlines inside string values with \\n
+  result = result.replace(/"([^"]*?)"/g, (_match, content) => {
+    return '"' + content.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"';
+  });
+
+  return result;
 }
 
 export async function checkOllamaStatus(): Promise<boolean> {

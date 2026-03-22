@@ -2,11 +2,11 @@ import { createWorker } from 'tesseract.js';
 
 let warmupDone = false;
 
-// Pre-download the language pack silently on app mount
+// Pre-download the WASM + language pack silently on app mount
 export async function warmUpTesseract(): Promise<void> {
   if (warmupDone) return;
   try {
-    const w = await createWorker(['eng']);
+    const w = await createWorker('eng');
     await w.terminate();
     warmupDone = true;
     console.log('[DISHA] Tesseract warmed up — OCR ready');
@@ -21,8 +21,9 @@ export async function performOCR(
 ): Promise<{ text: string; confidence: number }> {
   onProgress?.(5, 'Preparing OCR engine...');
 
-  // Always create a fresh worker with a progress logger so we get live updates
-  const worker = await createWorker(['eng'], {
+  // tesseract.js v7 API: createWorker(lang, oem, workerOptions)
+  // oem = 1 (LSTM only), logger goes in the THIRD arg
+  const worker = await createWorker('eng', 1, {
     logger: (m: any) => {
       if (typeof m.progress === 'number') {
         if (m.status === 'loading tesseract core') {
@@ -36,16 +37,16 @@ export async function performOCR(
         }
       }
     },
-  } as any);
+  });
 
   try {
     onProgress?.(35, 'Scanning document...');
 
-    // Race against a 45-second timeout
+    // Race against a 60-second timeout
     const result = await Promise.race([
       worker.recognize(imageData),
       new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('OCR timed out after 45 seconds. Try a clearer image.')), 45000)
+        setTimeout(() => reject(new Error('OCR timed out after 60 seconds. Try a clearer image.')), 60000)
       ),
     ]);
 

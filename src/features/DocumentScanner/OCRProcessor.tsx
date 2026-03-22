@@ -44,9 +44,16 @@ export default function OCRProcessor({ imageData, onComplete }: Props) {
 
       // Ollama extraction
       const extracted = await askOllamaJSON<ExtractedKYC>(
-        `Extract banking KYC information from this document scan text. Return ONLY this JSON structure with null for any field not found:
+        `You are a data extraction AI. Extract the person's details from this document scan.
+
+RULES:
+1. Return ONLY a valid JSON object.
+2. If a field is missing, set its value to null.
+3. For "document_type", choose exactly one of: Aadhaar, PAN, Passport, Salary Slip, Passbook, Unknown.
+
+Use this exact JSON format:
 {
-  "document_type": "Aadhaar|PAN|Passport|Salary Slip|Passbook|Unknown",
+  "document_type": null,
   "full_name": null,
   "date_of_birth": null,
   "gender": null,
@@ -59,7 +66,9 @@ export default function OCRProcessor({ imageData, onComplete }: Props) {
   "employer_name": null,
   "monthly_salary": null
 }
-Document text: ${text}`,
+
+DOCUMENT TEXT:
+${text}`,
         { timeout: 25000 }
       );
 
