@@ -71,9 +71,11 @@ export async function askOllamaJSON<T>(
  * - Strip control characters inside strings
  */
 function sanitizeJSON(str: string): string {
-  // Replace single-quoted strings with double-quoted
-  // Handles: 'value' → "value" and key: 'value' patterns
-  let result = str.replace(/'/g, '"');
+  let result = str;
+
+  // Fix unquoted keys (e.g., { key: "value" } -> { "key": "value" })
+  // Looks for word characters followed by a colon, optionally prefixed by whitespace and { or ,
+  result = result.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
 
   // Remove trailing commas before } or ]
   result = result.replace(/,\s*([}\]])/g, '$1');
@@ -81,8 +83,8 @@ function sanitizeJSON(str: string): string {
   // Remove any control characters except \n \r \t
   result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g, '');
 
-  // Replace literal newlines inside string values with \\n
-  result = result.replace(/"([^"]*?)"/g, (_match, content) => {
+  // Escape literal newlines inside double-quoted string values
+  result = result.replace(/"([^"\\]*(?:\\.[^"\\]*)*)"/g, (_match, content) => {
     return '"' + content.replace(/\n/g, '\\n').replace(/\r/g, '\\r').replace(/\t/g, '\\t') + '"';
   });
 
