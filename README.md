@@ -1,73 +1,39 @@
-# React + TypeScript + Vite
+# DISHA - Digital Indian Superhero Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+DISHA is a premier, hyper-localized banking companion designed to make banking accessible, empathetic, and intuitive for all users. Built for the Hackathon, this project combines a sleek React frontend with a robust Python/Kokoro TTS backend to deliver localized voice AI, real-time advanced OCR document scanning, and empathetic UI/UX flows.
 
-Currently, two official plugins are available:
+## Features
+- **Hyper-localized Indian TTS**: Authentic voice interactions using Kokoro-82M.
+- **Agentic OCR Document Scanning**: Advanced image binarization and Ollama AI data extraction tied natively into Voice feedbacks.
+- **Bereavement & Intake Compassion**: Accessibility-focused guided wizards with Aria-live updates.
+- **Eligibility Meter**: Real-time visual dynamic dashboards.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Running the Application
 
-## React Compiler
+### 1. Start the Background TTS Server (Python)
+The backend handles the synthetic audio pipeline and requires Python 3.9+ installed natively.
+```bash
+# Install the strict dependencies
+pip install -r requirements.txt
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Start the Flask TTS application
+python vita_server.py
+```
+*Note for Production: Do not use the Flask built-in development server in production. Wrap the server in a WSGI container like `gunicorn` or `waitress`.*
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 2. Start the Local AI Engine (Ollama)
+For the agent workflows to understand documents natively, start your local Ollama engine in another terminal tab:
+```bash
+ollama serve
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 3. Start the Frontend Development Environment (Node.js)
+```bash
+# Install frontend dependencies (if not already installed)
+npm install
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start the Vite development interface
+npm run dev
 ```
+
+The application will be available at `http://localhost:5174` (or whatever local port Vite provisions for you).

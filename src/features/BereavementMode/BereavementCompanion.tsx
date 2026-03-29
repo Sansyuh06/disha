@@ -113,12 +113,14 @@ Return ONLY this JSON (4-6 steps):
       {(phase === 'wizard' || (phase === 'loading' && !result)) && (
         <>
           {error && (
-            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+            <div className="mb-4 bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700" role="alert" aria-live="assertive">
               Could not reach AI assistant. Make sure Ollama is running.
-              <button onClick={() => setPhase('wizard')} className="ml-2 underline">Try Again</button>
+              <button onClick={() => setPhase('wizard')} className="ml-2 underline" aria-label="Retry connecting to AI">Try Again</button>
             </div>
           )}
-          <IntakeWizard onComplete={handleWizardComplete} loading={phase === 'loading'} />
+          <div aria-live="polite">
+            <IntakeWizard onComplete={handleWizardComplete} loading={phase === 'loading'} />
+          </div>
         </>
       )}
       {phase === 'results' && result && (
@@ -129,8 +131,13 @@ Return ONLY this JSON (4-6 steps):
 }
 
 function IntroScreen({ onStart }: { onStart: () => void }) {
+  const headingRef = React.useRef<HTMLHeadingElement>(null);
+  React.useEffect(() => {
+    headingRef.current?.focus();
+  }, []);
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh]">
+    <div className="flex flex-col items-center justify-center min-h-[80vh]" role="region" aria-label="Bereavement Intro">
       {/* Breathing animation */}
       <div className="relative w-40 h-40 flex items-center justify-center mb-10">
         {[80, 108, 136].map((size, i) => (
@@ -150,13 +157,14 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
       </div>
 
       <div className="bg-white rounded-2xl border border-blue-100 p-8 text-center max-w-sm shadow-sm mb-6">
-        <h2 className="font-heading text-xl font-semibold text-blue-900 mb-3">We are sorry for your loss.</h2>
+        <h2 ref={headingRef} tabIndex={-1} className="font-heading text-xl font-semibold text-blue-900 mb-3 focus:outline-none">We are sorry for your loss.</h2>
         <p className="text-blue-700 text-sm leading-relaxed mb-2">
           We are here to help you navigate this gently, at your own pace.
         </p>
         <p className="text-blue-600 text-sm mb-6">Take as much time as you need.</p>
         <button
           onClick={onStart}
+          aria-label="Start the guided bereavement assistance wizard"
           className="w-full py-3 rounded-xl border-2 font-medium text-sm transition-all hover:bg-blue-50"
           style={{ borderColor: '#93C5FD', color: '#1D4ED8' }}
         >

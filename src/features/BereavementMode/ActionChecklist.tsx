@@ -44,13 +44,19 @@ export default function ActionChecklist({ result, answers }: { result: Bereaveme
   const [claimStage, setClaimStage] = useState(0);
   const navigate = useNavigate();
 
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  
+  React.useEffect(() => {
+    containerRef.current?.focus();
+  }, []);
+
   const toggleCheck = (key: string) =>
     setChecked(prev => ({ ...prev, [key]: !prev[key] }));
 
   return (
-    <div className="space-y-5 animate-fade-in-up">
+    <div ref={containerRef} tabIndex={-1} className="space-y-5 animate-fade-in-up focus:outline-none" role="region" aria-label="Your Bereavement Action Plan">
       {/* Intro message */}
-      <p className="text-center italic text-blue-700 text-base leading-relaxed px-4">
+      <p className="text-center italic text-blue-700 text-base leading-relaxed px-4" aria-live="polite">
         {result.intro_message}
       </p>
 

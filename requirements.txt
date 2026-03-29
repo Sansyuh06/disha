@@ -1,0 +1,5 @@
+flask>=2.2
+flask-cors
+kokoro>=0.3.3
+soundfile
+numpy

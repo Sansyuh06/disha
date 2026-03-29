@@ -6,6 +6,7 @@ import OllamaStatus from '../components/OllamaStatus';
 import DishaLogo from '../components/DishaLogo';
 import { LANGUAGES } from '../utils/languages';
 import { useCustomer } from '../contexts/CustomerContext';
+import { checkOllamaStatus } from '../utils/ollama';
 
 const NAV_ITEMS = [
   {
@@ -89,10 +90,18 @@ export default function CustomerApp() {
   const { dispatch: customerDispatch } = useCustomer();
   const navigate = useNavigate();
   const [now, setNow] = React.useState(new Date());
+  const [ollamaOffline, setOllamaOffline] = useState(false);
 
   React.useEffect(() => {
+    checkOllamaStatus().then(ok => setOllamaOffline(!ok));
     const timer = setInterval(() => setNow(new Date()), 60000);
-    return () => clearInterval(timer);
+    const ollamaTimer = setInterval(() => {
+      checkOllamaStatus().then(ok => setOllamaOffline(!ok));
+    }, 15000);
+    return () => {
+      clearInterval(timer);
+      clearInterval(ollamaTimer);
+    };
   }, []);
 
   return (
@@ -188,6 +197,22 @@ export default function CustomerApp() {
             <AccessibilityToggle />
           </div>
         </header>
+
+        {ollamaOffline && (
+          <div className="bg-amber-50 shrink-0 border-b border-amber-200 px-6 py-2.5 flex items-center justify-between" role="alert" aria-live="assertive">
+            <div className="flex items-center gap-3">
+              <span className="text-amber-600">
+                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+              </span>
+              <p className="text-amber-800 text-sm font-medium">
+                AI features require Ollama running locally — voice understanding will be limited. Please run 'ollama serve' in your terminal.
+              </p>
+            </div>
+            <button onClick={() => setOllamaOffline(false)} className="text-amber-600 hover:text-amber-800 hover:bg-amber-100 p-1 rounded-lg transition-colors aria-label='Dismiss warning'">
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        )}
 
         {/* Content */}
         <main className="flex-1 overflow-y-auto">

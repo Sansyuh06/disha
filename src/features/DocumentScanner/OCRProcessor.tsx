@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { performOCR } from '../../utils/tesseract';
 import { askOllamaJSON } from '../../utils/ollama';
+import { speakWithVita } from '../../utils/vita';
 
 interface ExtractedKYC {
   document_type: string;
@@ -77,6 +78,22 @@ ${text}`,
       setProgress(100);
       setStatus('Complete!');
       onComplete(extracted as unknown as Record<string, string | null>);
+      
+      if (extracted.document_type && ['Aadhaar', 'PAN', 'Passport'].includes(extracted.document_type)) {
+        const idStr = extracted.id_number || '';
+        const idTail = idStr.length > 4 ? idStr.slice(-4) : idStr;
+        
+        let speechText = `I have scanned your ${extracted.document_type}. `;
+        if (idTail) {
+            speechText += `I noticed the ID ends in ${idTail}. Is this correct?`;
+        } else {
+            speechText += `Shall I proceed with these details?`;
+        }
+        
+        // Agentic loop TTS trigger
+        speakWithVita(speechText, { voice: 'hf_alpha' }).catch(console.error);
+      }
+      
     } catch (err) {
       setError((err as Error).message);
     }

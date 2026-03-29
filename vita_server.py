@@ -2,25 +2,35 @@
 # Kokoro-82M TTS server at http://localhost:8181
 # Uses moulish-dev/vita's kokoro dependency directly for maximum reliability
 
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 from kokoro import KPipeline
 import soundfile as sf
 import numpy as np
-import tempfile, os, threading
+import tempfile, os, threading, logging
+
+logging.basicConfig(level=logging.INFO, format='[%(levelname)s] %(message)s')
 
 app = Flask(__name__)
 CORS(app)
 
 # Lazy-loaded pipelines
 pipelines = {}
+pipeline_lock = threading.Lock()
+
+VALID_VOICES = {
+    'af_heart', 'af_bella', 'am_adam', 'am_echo',
+    'bf_emma', 'bf_isabella', 'bm_george', 'bm_lewis',
+    'hf_alpha', 'hf_beta', 'hm_omega', 'hm_psi'
+}
 
 def get_pipeline(lang='a'):
-    if lang not in pipelines:
-        print(f'[Vita] Loading pipeline for language: {lang}...')
-        pipelines[lang] = KPipeline(lang_code=lang)
-        print(f'[Vita] OK pipeline for {lang} ready')
-    return pipelines[lang]
+    with pipeline_lock:
+        if lang not in pipelines:
+            logging.info(f'[Vita] Loading pipeline for language: {lang}...')
+            pipelines[lang] = KPipeline(lang_code=lang)
+            logging.info(f'[Vita] OK pipeline for {lang} ready')
+        return pipelines[lang]
 
 
 @app.route('/speak', methods=['POST'])
@@ -28,14 +38,22 @@ def speak():
     data = request.json or {}
     text = (data.get('text', '') or '')[:500]
     voice = data.get('voice', 'af_heart')
-    speed = float(data.get('speed', 1.0))
+    
+    try:
+        raw_speed = float(data.get('speed', 1.0))
+        speed = max(0.5, min(2.0, raw_speed))
+    except (ValueError, TypeError):
+        speed = 1.0
 
     if not text.strip():
-        return {'error': 'empty text'}, 400
+        return jsonify({'error': 'empty text'}), 400
+        
+    if voice not in VALID_VOICES:
+        return jsonify({'error': f'invalid voice: {voice}'}), 400
 
     try:
         # Detect language code from voice name (e.g., 'hf_alpha' -> 'h')
-        lang = voice[0] if voice and len(voice) > 0 else 'a'
+        lang = voice[0]
         pipe = get_pipeline(lang)
         
         audio_chunks = []
@@ -43,7 +61,7 @@ def speak():
             audio_chunks.append(audio)
 
         if not audio_chunks:
-            return {'error': 'no audio generated'}, 500
+            return jsonify({'error': 'no audio generated'}), 500
 
         combined = np.concatenate(audio_chunks)
         tmp = tempfile.NamedTemporaryFile(suffix='.wav', delete=False)
@@ -59,12 +77,13 @@ def speak():
     except Exception as e:
         import traceback
         traceback.print_exc()
-        return {'error': str(e)}, 500
+        logging.error(f'[Vita] Error generating audio: {e}')
+        return jsonify({'error': str(e)}), 500
 
 
 @app.route('/status', methods=['GET'])
 def status():
-    return {
+    return jsonify({
         'status': 'ok',
         'model': 'kokoro-82m',
         'library': 'kokoro-python',
@@ -73,19 +92,19 @@ def status():
             'UK English': ['bf_emma', 'bf_isabella', 'bm_george', 'bm_lewis'],
             'Hindi (Indian)': ['hf_alpha', 'hf_beta', 'hm_omega', 'hm_psi']
         }
-    }
+    })
 
 
 if __name__ == '__main__':
-    print()
-    print('====================================================')
-    print('|  VITA TTS Server - Kokoro-82M (Multilingual)     |')
-    print('|  Port: 8181 | Support: US, UK, HI, ES, etc.      |')
-    print('====================================================')
-    print()
+    logging.info('')
+    logging.info('====================================================')
+    logging.info('|  VITA TTS Server - Kokoro-82M (Multilingual)     |')
+    logging.info('|  Port: 8181 | Support: US, UK, HI, ES, etc.      |')
+    logging.info('====================================================')
+    logging.info('')
     # Pre-warm both American and Indian pipelines as defaults
     get_pipeline('a')
     get_pipeline('h')
-    print()
-    print('[Vita] Server starting on http://localhost:8181')
+    logging.info('')
+    logging.info('[Vita] Server starting on http://localhost:8181')
     app.run(host='0.0.0.0', port=8181, debug=False)
