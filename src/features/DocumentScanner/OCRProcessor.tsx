@@ -44,12 +44,14 @@ export default function OCRProcessor({ imageData, onComplete }: Props) {
 
       // Ollama extraction
       const extracted = await askOllamaJSON<ExtractedKYC>(
-        `You are a data extraction AI. Extract the person's details from this document scan.
+        `You are an advanced data extraction AI. Accurately extract the person's details from the raw OCR text of this document scan.
 
-RULES:
-1. Return ONLY a valid JSON object.
+CRITICAL RULES:
+1. Return ONLY a valid JSON object, no markdown or text.
 2. If a field is missing, set its value to null.
 3. For "document_type", choose exactly one of: Aadhaar, PAN, Passport, Salary Slip, Passbook, Unknown.
+4. Auto-correct obvious OCR typos in names or IDs (e.g., '0' vs 'O', '1' vs 'I', 'S' vs '5').
+5. If Aadhaar, ensure id_number is formatted as 12 digits. If PAN, ensure it is 10 alphanumeric chars (e.g., ABCDE1234F).
 
 Use this exact JSON format:
 {
