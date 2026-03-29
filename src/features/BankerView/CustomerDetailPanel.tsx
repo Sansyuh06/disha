@@ -2,10 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { QueueItem, useQueue } from '../../contexts/QueueContext';
 import { askOllama } from '../../utils/ollama';
 
-type Tab = 'journey' | 'documents' | 'ai' | 'notes';
+type Tab = 'overview' | 'journey' | 'documents' | 'ai' | 'notes';
 
 export default function CustomerDetailPanel({ customer }: { customer: QueueItem }) {
-  const [activeTab, setActiveTab] = useState<Tab>('journey');
+  const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [greeting, setGreeting] = useState('');
   const [approach, setApproach] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function CustomerDetailPanel({ customer }: { customer: QueueItem 
 
   // Load AI script when tab is opened
   useEffect(() => {
-    if (activeTab === 'ai' && !aiCalled.current) {
+    if ((activeTab === 'ai' || activeTab === 'overview') && !aiCalled.current) {
       aiCalled.current = true;
       setAiLoading(true);
       Promise.all([
@@ -40,6 +40,7 @@ export default function CustomerDetailPanel({ customer }: { customer: QueueItem 
   }, [activeTab, customer]);
 
   const TABS: { key: Tab; label: string }[] = [
+    { key: 'overview', label: '📊 Context' },
     { key: 'journey', label: '🗺️ Journey' },
     { key: 'documents', label: '📄 Documents' },
     { key: 'ai', label: '🤖 AI Script' },
@@ -78,6 +79,9 @@ export default function CustomerDetailPanel({ customer }: { customer: QueueItem 
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto p-6">
+        {activeTab === 'overview' && (
+          <OverviewTab customer={customer} loading={aiLoading} approach={approach} />
+        )}
         {activeTab === 'journey' && (
           <JourneyTab customer={customer} onComplete={(step) => dispatch({ type: 'COMPLETE_STEP', token: customer.token, stepNum: step })} />
         )}
@@ -140,6 +144,64 @@ export default function CustomerDetailPanel({ customer }: { customer: QueueItem 
           {toast}
         </div>
       )}
+    </div>
+  );
+}
+
+function OverviewTab({ customer, loading, approach }: { customer: QueueItem, loading: boolean, approach: string }) {
+  return (
+    <div className="space-y-6 flex flex-col h-full animate-fade-in-up">
+      {/* Metrics Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
+          <p className="text-xs text-blue-700 font-semibold mb-1 uppercase tracking-wider">Intent Detected</p>
+          <p className="text-sm font-bold text-blue-900 capitalize">{customer.taskType}</p>
+        </div>
+        <div className={`border rounded-xl p-4 ${customer.isBereavement ? 'bg-indigo-50 border-indigo-200' : 'bg-green-50 border-green-200'}`}>
+          <p className={`text-xs font-semibold mb-1 uppercase tracking-wider ${customer.isBereavement ? 'text-indigo-700' : 'text-green-700'}`}>Emotional State</p>
+          <p className={`text-sm font-bold capitalize ${customer.isBereavement ? 'text-indigo-900' : 'text-green-900'}`}>{customer.isBereavement ? 'Bereavement / High Distress' : 'Standard / Calm'}</p>
+        </div>
+        <div className="bg-orange-50 border border-orange-100 rounded-xl p-4">
+          <p className="text-xs text-orange-700 font-semibold mb-1 uppercase tracking-wider">Wait Time</p>
+          <p className="text-sm font-bold text-orange-900">{Math.round((new Date().getTime() - customer.arrivedAt.getTime()) / 60000)} mins waiting</p>
+        </div>
+        <div className="bg-teal-50 border border-teal-100 rounded-xl p-4">
+          <p className="text-xs text-teal-700 font-semibold mb-1 uppercase tracking-wider">Docs Prescanned</p>
+          <p className="text-sm font-bold text-teal-900">{customer.docsScanned} / {customer.docsTotal} Verified</p>
+        </div>
+      </div>
+
+      {/* Suggested Approach */}
+      <div className="flex-1 bg-white border rounded-xl overflow-hidden flex flex-col shadow-sm" style={{ borderColor: 'var(--border)' }}>
+        <div className="bg-indigo-50 px-5 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--border)' }}>
+          <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            AI Suggested Approach
+          </h3>
+        </div>
+        <div className="px-6 py-5">
+          {customer.aiSuggestion ? (
+             <p className="text-sm text-gray-800 leading-relaxed font-medium">{customer.aiSuggestion}</p>
+          ) : loading ? (
+            <div className="space-y-3">
+              <div className="skeleton h-4 w-3/4 rounded-md"></div>
+              <div className="skeleton h-4 w-full rounded-md"></div>
+              <div className="skeleton h-4 w-5/6 rounded-md"></div>
+            </div>
+          ) : approach ? (
+            <div className="space-y-2">
+               {approach.split('\n').filter(l => l.trim()).map((line, i) => (
+                 <p key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                   <span className="text-indigo-600 font-bold mt-0.5">•</span>
+                   {line.replace(/^[•\-]\s*/, '')}
+                 </p>
+               ))}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500 italic">No specific approach generated for this workflow.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

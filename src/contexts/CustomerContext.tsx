@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useReducer } from 'react';
+import { CustomerProfile } from '../utils/mockBank';
 
 export type UserType = 'standard' | 'elderly' | 'firstTime' | 'distressed';
 export type EmotionalContext = 'normal' | 'confused' | 'bereavement' | 'urgent';
@@ -63,6 +64,7 @@ interface CustomerState {
   sessionId: string;
   intentProfile: IntentProfile | null;
   preVisitSession: PreVisitSession | null;
+  customerProfile: CustomerProfile | null;
 }
 
 type CustomerAction =
@@ -72,6 +74,7 @@ type CustomerAction =
   | { type: 'SET_TOKEN'; token: string }
   | { type: 'SET_INTENT'; profile: IntentProfile }
   | { type: 'SET_PRE_VISIT'; session: PreVisitSession }
+  | { type: 'SET_CUSTOMER_PROFILE'; profile: CustomerProfile }
   | { type: 'CLEAR_SESSION' };
 
 const initialState: CustomerState = {
@@ -81,6 +84,7 @@ const initialState: CustomerState = {
   sessionId: `S${Date.now()}`,
   intentProfile: null,
   preVisitSession: null,
+  customerProfile: null,
 };
 
 function reducer(state: CustomerState, action: CustomerAction): CustomerState {
@@ -106,6 +110,8 @@ function reducer(state: CustomerState, action: CustomerAction): CustomerState {
       return { ...state, intentProfile: action.profile };
     case 'SET_PRE_VISIT':
       return { ...state, preVisitSession: action.session };
+    case 'SET_CUSTOMER_PROFILE':
+      return { ...state, customerProfile: action.profile };
     case 'CLEAR_SESSION':
       return { ...initialState, sessionId: `S${Date.now()}` };
     default:

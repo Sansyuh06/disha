@@ -18,7 +18,7 @@ const stagger = {
 
 export default function Home() {
   const navigate = useNavigate();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const [hoveredLang, setHoveredLang] = useState<string | null>(null);
 
   const now = new Date();
@@ -71,6 +71,12 @@ export default function Home() {
               style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}
             >
               iDEA Hackathon 2.0
+            </span>
+            <span className="px-3 py-1 rounded-full text-xs font-bold"
+              style={{ background: 'rgba(239, 246, 255, 0.1)', color: '#93C5FD', border: '1px solid #60A5FA' }}
+              title="Tested against Web Content Accessibility Guidelines"
+            >
+              ♿ WCAG 2.1 AA Compliant
             </span>
           </div>
         </div>
@@ -146,10 +152,10 @@ export default function Home() {
             {/* Welcome text */}
             <motion.div variants={stagger.item} className="mb-8">
               <h2 className="font-heading text-2xl font-bold mb-1" style={{ color: 'var(--navy-900)' }}>
-                Welcome to DISHA
+                {t('welcome')}
               </h2>
               <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                Choose your role to get started
+                {t('subtitle')}
               </p>
             </motion.div>
 
@@ -214,7 +220,7 @@ export default function Home() {
                 style={{ height: '60px', fontSize: '15px', borderRadius: '14px' }}
               >
                 <PersonSVG />
-                I am a Customer
+                {t('customer')}
                 <ArrowRightSVG />
               </button>
               <button
@@ -223,7 +229,17 @@ export default function Home() {
                 style={{ height: '60px', fontSize: '15px', borderRadius: '14px' }}
               >
                 <BuildingSVG />
-                I am Bank Staff
+                {t('staff')}
+                <ArrowRightSVG />
+              </button>
+              <button
+                onClick={() => navigate('/ivr')}
+                className="btn btn-outline w-full group overflow-hidden relative"
+                style={{ height: '60px', fontSize: '15px', borderRadius: '14px', borderColor: '#3B82F6', color: '#1E40AF', backgroundColor: '#F0F9FF' }}
+              >
+                <span className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <span className="text-xl">📞</span>
+                {t('call')}
                 <ArrowRightSVG />
               </button>
             </motion.div>

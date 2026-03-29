@@ -13,6 +13,7 @@ import BereavementCompanion from './features/BereavementMode/BereavementCompanio
 import BankerDashboard from './features/BankerView/BankerDashboard';
 import PreVisitAssistant from './features/PreVisit/PreVisitAssistant';
 import TransactionOutput from './features/TransactionOutput/TransactionOutput';
+import ContactCenter from './features/IVRBot/ContactCenter';
 
 import FeatureErrorBoundary from './components/FeatureErrorBoundary';
 
@@ -82,6 +83,12 @@ export default function App() {
         }>
           <Route index element={<BankerDashboard />} />
         </Route>
+
+        <Route path="/ivr" element={
+          <FeatureErrorBoundary>
+            <ContactCenter />
+          </FeatureErrorBoundary>
+        } />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
