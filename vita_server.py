@@ -83,8 +83,9 @@ if __name__ == '__main__':
     print('|  Port: 8181 | Support: US, UK, HI, ES, etc.      |')
     print('====================================================')
     print()
-    # Pre-warm the US pipeline as default
+    # Pre-warm both American and Indian pipelines as defaults
     get_pipeline('a')
+    get_pipeline('h')
     print()
     print('[Vita] Server starting on http://localhost:8181')
     app.run(host='0.0.0.0', port=8181, debug=False)

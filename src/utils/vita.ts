@@ -45,9 +45,13 @@ export async function speakWithVita(text: string, opts: VitaOptions = {}): Promi
           audio.onerror = () => { URL.revokeObjectURL(url); reject(); };
           audio.play().catch(reject);
         });
+      } else {
+        console.warn('[Vita] Server returned error status:', res.status);
       }
-    } catch {
-      vitaAvailable = false;
+    } catch (e) {
+      console.warn('[Vita] Fetch timed out or failed. Falling back to browser TTS.', e);
+      // We don't set vitaAvailable = false here because it might just be the first-time model 
+      // download causing a timeout. We want future requests to keep trying the local server.
     }
   }
 
