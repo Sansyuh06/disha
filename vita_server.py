@@ -12,16 +12,15 @@ import tempfile, os, threading
 app = Flask(__name__)
 CORS(app)
 
-# Lazy-loaded pipeline
-pipeline = None
+# Lazy-loaded pipelines
+pipelines = {}
 
-def get_pipeline():
-    global pipeline
-    if pipeline is None:
-        print('[Vita] Loading Kokoro-82M pipeline (first load downloads ~300MB)...')
-        pipeline = KPipeline(lang_code='a')
-        print('[Vita] ✓ Kokoro-82M pipeline ready')
-    return pipeline
+def get_pipeline(lang='a'):
+    if lang not in pipelines:
+        print(f'[Vita] Loading pipeline for language: {lang}...')
+        pipelines[lang] = KPipeline(lang_code=lang)
+        print(f'[Vita] OK pipeline for {lang} ready')
+    return pipelines[lang]
 
 
 @app.route('/speak', methods=['POST'])
@@ -35,7 +34,10 @@ def speak():
         return {'error': 'empty text'}, 400
 
     try:
-        pipe = get_pipeline()
+        # Detect language code from voice name (e.g., 'hf_alpha' -> 'h')
+        lang = voice[0] if voice and len(voice) > 0 else 'a'
+        pipe = get_pipeline(lang)
+        
         audio_chunks = []
         for _, _, audio in pipe(text, voice=voice, speed=speed):
             audio_chunks.append(audio)
@@ -65,20 +67,24 @@ def status():
     return {
         'status': 'ok',
         'model': 'kokoro-82m',
-        'library': 'moulish-dev/vita',
-        'voices': ['af_heart', 'af_bella', 'am_adam', 'am_echo', 'bf_emma', 'bm_george']
+        'library': 'kokoro-python',
+        'voices': {
+            'US English': ['af_heart', 'af_bella', 'am_adam', 'am_echo'],
+            'UK English': ['bf_emma', 'bf_isabella', 'bm_george', 'bm_lewis'],
+            'Hindi (Indian)': ['hf_alpha', 'hf_beta', 'hm_omega', 'hm_psi']
+        }
     }
 
 
 if __name__ == '__main__':
     print()
-    print('╔══════════════════════════════════════════════════╗')
-    print('║  VITA TTS Server — Kokoro-82M                   ║')
-    print('║  Port: 8181 | github.com/moulish-dev/vita       ║')
-    print('╚══════════════════════════════════════════════════╝')
+    print('====================================================')
+    print('|  VITA TTS Server - Kokoro-82M (Multilingual)     |')
+    print('|  Port: 8181 | Support: US, UK, HI, ES, etc.      |')
+    print('====================================================')
     print()
-    # Pre-warm the pipeline
-    get_pipeline()
+    # Pre-warm the US pipeline as default
+    get_pipeline('a')
     print()
     print('[Vita] Server starting on http://localhost:8181')
     app.run(host='0.0.0.0', port=8181, debug=False)

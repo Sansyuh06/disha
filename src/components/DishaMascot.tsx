@@ -123,7 +123,7 @@ export default function DishaMascot({ onSessionReady }: Props) {
         ? await translate(bannerText, 'en', language.code)
         : bannerText;
       setMascotText(localBanner);
-      await speakWithVita(bannerText, { voice: profile.emotion === 'bereavement' ? 'bf_emma' : 'af_heart' });
+      await speakWithVita(bannerText, { voice: profile.emotion === 'bereavement' ? 'bf_emma' : 'hf_alpha' });
 
       addStep('All done — navigating now');
       setPhase('done');
@@ -139,7 +139,7 @@ export default function DishaMascot({ onSessionReady }: Props) {
     } catch (err) {
       setPhase('error');
       setMascotText('I had trouble understanding that. Please try again or use the menu.');
-      speakWithVita('I had trouble understanding that. Please try the menu.', { voice: 'af_heart' });
+      speakWithVita('I had trouble understanding that. Please try the menu.', { voice: 'hf_alpha' });
     }
   };
 

@@ -107,7 +107,7 @@ Generate realistic documents for their task. Estimated wait: 15-45 minutes depen
 
       const responseText = `I've prepared your visit plan! You'll need ${result.documents.length} document${result.documents.length > 1 ? 's' : ''}. Estimated wait is about ${result.estimated_wait_minutes} minutes. The best time to visit is ${result.best_time_to_visit}. Your session code is ${code} — scan the QR at the kiosk and everything will be pre-loaded.`;
       addMessage('disha', responseText);
-      speakWithVita(responseText, { voice: 'af_heart' });
+      speakWithVita(responseText, { voice: 'hf_alpha' });
 
     } catch {
       addMessage('disha', "I couldn't reach the AI assistant. Make sure Ollama is running. Type 'ollama serve' in your terminal.");
