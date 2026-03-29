@@ -32,7 +32,8 @@ export default function EligibilityMeter({ value, dti, cibil, income, projectedE
 
   const fillAngle = angleForValue(clampedValue);
   const fillEnd = polarToCart(fillAngle);
-  const fillLargeArc = clampedValue > 50 ? 1 : 0;
+  const sweepAngle = (clampedValue / 100) * totalArc;
+  const fillLargeArc = sweepAngle > 180 ? 1 : 0;
 
   // Premium colors
   const isExcellent = clampedValue >= 75;
