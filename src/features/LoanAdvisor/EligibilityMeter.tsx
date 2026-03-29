@@ -97,7 +97,7 @@ export default function EligibilityMeter({ value, dti, cibil, income, projectedE
           <circle cx={CX} cy={CY + 5} r={8} fill={primaryColor} style={{ transition: 'all 0.8s ease' }} />
 
           {/* Needle Pointer */}
-          <g style={{ transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transformOrigin: `${CX}px ${CY + 5}px`, transform: `rotate(${needleAngle - startAngle + 45}deg)` }}>
+          <g style={{ transition: 'all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275)', transformOrigin: `${CX}px ${CY + 5}px`, transform: `rotate(${needleAngle + 90}deg)` }}>
             <polygon
               points={`${CX - 4},${CY + 5} ${CX + 4},${CY + 5} ${CX},${CY - RADIUS + STROKE_WIDTH + 8}`}
               fill={primaryColor}
