@@ -102,9 +102,8 @@ if __name__ == '__main__':
     logging.info('|  Port: 8181 | Support: US, UK, HI, ES, etc.      |')
     logging.info('====================================================')
     logging.info('')
-    # Pre-warm both American and Indian pipelines as defaults
+    # Pre-warm American pipeline as default
     get_pipeline('a')
-    get_pipeline('h')
     logging.info('')
     logging.info('[Vita] Server starting on http://localhost:8181')
     app.run(host='0.0.0.0', port=8181, debug=False)

@@ -101,7 +101,7 @@ export default function VoiceAssistant() {
 
         setMicState('speaking');
         setStatusText('Speaking...');
-        await speakWithVita(localAnswer, { voice: 'hf_alpha' });
+        await speakWithVita(localAnswer, { voice: 'af_heart' });
         setMicState('idle');
         setStatusText('Tap to speak');
       } catch (err) {

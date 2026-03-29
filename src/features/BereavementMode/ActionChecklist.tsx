@@ -79,7 +79,7 @@ export default function ActionChecklist({ result, answers }: { result: Bereaveme
 
       {/* Steps */}
       <div className="space-y-4">
-        {result.steps.map(step => (
+        {(result.steps || []).map(step => (
           <div
             key={step.step_number}
             className="bg-white rounded-2xl border border-blue-100 p-5 shadow-sm"
@@ -96,9 +96,9 @@ export default function ActionChecklist({ result, answers }: { result: Bereaveme
 
             <p className="text-sm text-blue-800 leading-relaxed mb-3">{step.description}</p>
 
-            {step.documents_needed.length > 0 && (
+            {(step.documents_needed || []).length > 0 && (
               <div className="mb-3 space-y-1.5">
-                {step.documents_needed.map((doc, i) => (
+                {(step.documents_needed || []).map((doc, i) => (
                   <label key={i} className="flex items-start gap-2 cursor-pointer">
                     <input
                       type="checkbox"

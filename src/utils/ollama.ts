@@ -2,21 +2,25 @@ export interface OllamaOptions {
   model?: string;
   stream?: boolean;
   timeout?: number;
+  format?: 'json' | string;
 }
 
 export async function askOllama(
   prompt: string,
   options: OllamaOptions = {}
 ): Promise<string> {
-  const { model = 'llama3:latest', stream = false, timeout = 30000 } = options;
+  const { model = 'llama3:latest', stream = false, timeout = 30000, format } = options;
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeout);
   try {
+    const payload: any = { model, prompt, stream };
+    if (format) payload.format = format;
+
     const res = await fetch('http://localhost:11434/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: controller.signal,
-      body: JSON.stringify({ model, prompt, stream }),
+      body: JSON.stringify(payload),
     });
     if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
     const data = await res.json();
@@ -35,14 +39,19 @@ export async function askOllamaJSON<T>(
   prompt: string,
   options: OllamaOptions = {}
 ): Promise<T> {
-  const raw = await askOllama(prompt, options);
-  // Extract the JSON block from markdown fences / preamble text
-  const match = raw.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
-  if (!match) {
-    throw new Error('AI returned unexpected format. Please try rephrasing your request.');
-  }
+  const raw = await askOllama(prompt, { ...options, format: 'json' });
+  
+  // Ollama native json format guarantees valid JSON, so we can skip regex stripping usually
+  try {
+    return JSON.parse(raw) as T;
+  } catch (initialParseError) {
+    // Fallback extraction block just in case
+    const match = raw.match(/(\{[\s\S]*\}|\[[\s\S]*\])/);
+    if (!match) {
+      throw new Error('AI returned unexpected format. Please try rephrasing your request.');
+    }
 
-  let jsonStr = match[0];
+    let jsonStr = match[0];
 
   // Try parsing as-is first
   try {
@@ -61,6 +70,7 @@ export async function askOllamaJSON<T>(
       }
       return JSON.parse(sanitizeJSON(raw.slice(start, end + 1))) as T;
     }
+  }
   }
 }
 

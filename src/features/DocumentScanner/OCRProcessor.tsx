@@ -51,8 +51,11 @@ CRITICAL RULES:
 1. Return ONLY a valid JSON object, no markdown or text.
 2. If a field is missing, set its value to null.
 3. For "document_type", choose exactly one of: Aadhaar, PAN, Passport, Salary Slip, Passbook, Unknown.
-4. Auto-correct obvious OCR typos in names or IDs (e.g., '0' vs 'O', '1' vs 'I', 'S' vs '5').
-5. If Aadhaar, ensure id_number is formatted as 12 digits. If PAN, ensure it is 10 alphanumeric chars (e.g., ABCDE1234F).
+   - FORCE Aadhaar if the text contains: "Aadhaar", "Unique Identification", "VID", "Male" / "Female", or ANY 12-digit numeric sequence (even if spaced like 1234 5678 9012).
+   - FORCE PAN if the text contains: "INCOME TAX", "Permanent Account Number", or an ID matching 5 letters, 4 numbers, 1 letter.
+   - FORCE Passport ONLY if it explicitly says "Passport", "Republic of India", or "Given Name(s)".
+4. Auto-correct obvious OCR typos in names or IDs (e.g., '0' vs 'O', '1' vs 'I', 'S' vs '5', '8' vs 'B').
+5. If Aadhaar, ensure id_number is formatted as 12 numeric digits without spaces. If PAN, ensure it is exactly 10 alphanumeric chars.
 
 Use this exact JSON format:
 {
@@ -91,7 +94,7 @@ ${text}`,
         }
         
         // Agentic loop TTS trigger
-        speakWithVita(speechText, { voice: 'hf_alpha' }).catch(console.error);
+        speakWithVita(speechText, { voice: 'af_heart' }).catch(console.error);
       }
       
     } catch (err) {

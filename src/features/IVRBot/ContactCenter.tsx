@@ -31,7 +31,7 @@ export default function ContactCenter() {
   useEffect(() => {
     // Speak first message automatically
     setIsSpeaking(true);
-    speakWithVita(messages[0].text, { voice: 'hf_alpha' }).finally(() => setIsSpeaking(false));
+    speakWithVita(messages[0].text, { voice: 'af_heart' }).finally(() => setIsSpeaking(false));
   }, []);
 
   const handleUserInput = async (text: string) => {
@@ -116,7 +116,7 @@ export default function ContactCenter() {
     setIsSpeaking(true);
     try {
       if (isListening) stopListening();
-      await speakWithVita(text, { voice: 'hf_alpha' });
+      await speakWithVita(text, { voice: 'af_heart' });
     } catch {
       // ignore
     } finally {

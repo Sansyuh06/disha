@@ -75,6 +75,7 @@ Return ONLY this JSON (no markdown):
   "quick_tip": "One practical tip to make their visit faster"
 }
 
+CRITICAL: "documents" MUST be an array of plain strings. Do NOT return objects.
 Generate realistic documents for their task. Estimated wait: 15-45 minutes depending on task complexity.`,
         { timeout: 25000 }
       );
@@ -107,7 +108,7 @@ Generate realistic documents for their task. Estimated wait: 15-45 minutes depen
 
       const responseText = `I've prepared your visit plan! You'll need ${result.documents.length} document${result.documents.length > 1 ? 's' : ''}. Estimated wait is about ${result.estimated_wait_minutes} minutes. The best time to visit is ${result.best_time_to_visit}. Your session code is ${code} — scan the QR at the kiosk and everything will be pre-loaded.`;
       addMessage('disha', responseText);
-      speakWithVita(responseText, { voice: 'hf_alpha' });
+      speakWithVita(responseText, { voice: 'af_heart' });
 
     } catch {
       addMessage('disha', "I couldn't reach the AI assistant. Make sure Ollama is running. Type 'ollama serve' in your terminal.");
@@ -140,13 +141,16 @@ Generate realistic documents for their task. Estimated wait: 15-45 minutes depen
           journey: {
             task_summary: data.task.slice(0, 30),
             total_minutes: plan?.estimated_wait_minutes ?? 25,
-            journey: (data.journey ?? []).map((counter: string, i: number) => ({
-              step: i + 1, counter, service: counter,
+            journey: (data.journey ?? []).map((counter: any, i: number) => {
+              const safeCounter = typeof counter === 'string' ? counter : 'Desk ' + (i + 1);
+              return {
+              step: i + 1, counter: safeCounter, service: safeCounter,
               purpose: `Proceed to ${counter}`,
               wait_minutes: Math.floor((plan?.estimated_wait_minutes ?? 25) / (data.journey?.length ?? 3)),
               documents: i === 0 ? data.documents : [],
               tip: i === 0 ? (plan?.quick_tip ?? '') : '',
-            })),
+              };
+            }),
           },
         });
         navigate('/customer/journey');
@@ -235,12 +239,14 @@ Generate realistic documents for their task. Estimated wait: 15-45 minutes depen
               <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '16px' }}>
                 <div>
                   <p style={{ fontSize: '11px', fontWeight: 700, color: '#6B7A99', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '8px' }}>Documents to bring</p>
-                  {plan.documents.map((doc, i) => (
+                  {(plan.documents || []).map((doc: any, i) => (
                     <div key={i} style={{ display: 'flex', gap: '8px', marginBottom: '5px' }}>
                       <div style={{ width: '16px', height: '16px', borderRadius: '50%', background: '#E0F7F3', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '1px' }}>
                         <svg width="10" height="10" fill="none" stroke="#089B84" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                       </div>
-                      <p style={{ fontSize: '12px', color: '#3D4F7C', lineHeight: 1.5 }}>{doc}</p>
+                      <p style={{ fontSize: '12px', color: '#3D4F7C', lineHeight: 1.5 }}>
+                        {typeof doc === 'string' ? doc : Object.values(doc).filter(Boolean).join(' — ')}
+                      </p>
                     </div>
                   ))}
 

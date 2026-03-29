@@ -3,7 +3,7 @@
 // Fallback: browser SpeechSynthesis if Vita server is not running
 
 export interface VitaOptions {
-  voice?: 'hf_alpha' | 'hf_beta' | 'hm_omega' | 'hm_psi' | 'af_heart' | 'af_bella' | 'am_adam' | 'am_echo' | 'bf_emma' | 'bm_george';
+  voice?: 'af_heart' | 'hf_beta' | 'hm_omega' | 'hm_psi' | 'af_heart' | 'af_bella' | 'am_adam' | 'am_echo' | 'bf_emma' | 'bm_george';
   speed?: number;
   lang?: string; // BCP-47 for fallback SpeechSynthesis
 }
@@ -24,7 +24,7 @@ export async function checkVitaStatus(): Promise<boolean> {
 }
 
 export async function speakWithVita(text: string, opts: VitaOptions = {}): Promise<void> {
-  const { voice = 'hf_alpha', speed = 1.0, lang = 'en-IN' } = opts;
+  const { voice = 'af_heart', speed = 1.0, lang = 'en-IN' } = opts;
 
   // Try Vita (Kokoro-82M) first
   if (vitaAvailable !== false) {
